@@ -19,7 +19,7 @@ async function signUp(event) {
     username: username.value
   }]);
   if (dbErr) return alert(dbErr.message);
-  window.location = 'login.html';
+  window.location = 'public/login.html';
 }
 
 // Log in
@@ -31,13 +31,13 @@ async function signIn(event) {
     password: password.value
   });
   if (error) return alert(error.message);
-  window.location = 'dashboard.html';
+  window.location = 'public/dashboard.html';
 }
 
 // Protect routes
 async function requireAuth() {
   const session = supabase.auth.session();
-  if (!session) window.location = 'login.html';
+  if (!session) window.location = 'public/login.html';
   return session.user;
 }
 
@@ -70,5 +70,5 @@ async function updateProfile(event) {
 // Logout
 function logout() {
   supabase.auth.signOut();
-  window.location = 'login.html';
+  window.location = 'public/login.html';
 }
