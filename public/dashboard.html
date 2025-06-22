@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="auth.js" defer></script>
+</head>
+<body onload="init()">
+  <div class="container">
+    <!-- Profile Picture Placeholder -->
+    <img id="avatar" src="https://via.placeholder.com/100" alt="Profile Pic" style="border-radius:50%;">
+    <!-- Footer Tabs -->
+    <footer>
+      <button onclick="showSection('home')">Home</button>
+      <button onclick="showSection('account')">Account</button>
+    </footer>
+
+    <!-- Sections -->
+    <div id="home-section">  
+      <h3>Welcome to Home</h3>
+      <p>Just a test home page.</p>
+    </div>
+
+    <div id="account-section" class="hidden">
+      <h3>Account Details</h3>
+      <p><strong>Username:</strong> <span id="acc-username"></span></p>
+      <p><strong>Name:</strong> <span id="acc-name"></span></p>
+      <p><strong>Coins:</strong> <span id="acc-coins"></span></p>
+
+      <hr>
+
+      <h4>My Profile</h4>
+      <form onsubmit="updateProfile(event)">
+        <input name="first_name" placeholder="First Name">
+        <input name="last_name" placeholder="Last Name">
+        <select name="gender">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        <button type="submit">Update</button>
+      </form>
+
+      <button onclick="logout()" style="margin-top:20px;">Log Out</button>
+    </div>
+  </div>
+
+  <script>
+    async function init() {
+      const user = await requireAuth();
+      const profile = await loadProfile(user);
+      document.getElementById('acc-username').textContent = profile.username;
+      document.getElementById('acc-name').textContent = (profile.first_name || '') + ' ' + (profile.last_name || '');
+      document.getElementById('acc-coins').textContent = profile.coins;
+    }
+    function showSection(id) {
+      document.getElementById('home-section').classList.toggle('hidden', id!=='home');
+      document.getElementById('account-section').classList.toggle('hidden', id!=='account');
+    }
+  </script>
+</body>
+</html>
