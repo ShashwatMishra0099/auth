@@ -1,75 +1,86 @@
-const supabase = supabase.createClient('https://xdyzijzaidzmwpvmdvzd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI');
+// Initialize Supabase
+const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const loginButton = document.getElementById('login-button');
-const signupButton = document.getElementById('signup-button');
-const logoutButton = document.getElementById('logout-button');
-const profileForm = document.getElementById('profile-form');
+// Elements
+const authContainer = document.getElementById('auth-container');
+const loginScreen = document.getElementById('login-screen');
+const signupScreen = document.getElementById('signup-screen');
+const appContainer = document.getElementById('app-container');
 
-loginButton.onclick = async () => {
-  const username = document.getElementById('login-username').value;
-  const password = document.getElementById('login-password').value;
-  const { error, data } = await supabase.auth.signInWithPassword({ email: username, password });
-  if (error) return alert(error.message);
-  loadDashboard();
-};
+// Toggle links
+document.getElementById('show-signup').addEventListener('click', () => {
+  loginScreen.classList.add('hidden'); signupScreen.classList.remove('hidden');
+});
+document.getElementById('show-login').addEventListener('click', () => {
+  signupScreen.classList.add('hidden'); loginScreen.classList.remove('hidden');
+});
 
-signupButton.onclick = async () => {
-  const username = document.getElementById('signup-username').value;
-  const password = document.getElementById('signup-password').value;
-  const { data, error } = await supabase.auth.signUp({ email: username, password });
-  if (error) return alert(error.message);
-  await supabase.from('profiles').insert([{ id: data.user.id, username }]);
-  alert('Sign up successful. You may now log in.');
-};
+// Sign Up
+document.getElementById('btn-signup').addEventListener('click', async () => {
+  const username = document.getElementById('su-username').value;
+  const email = document.getElementById('su-email').value;
+  const password = document.getElementById('su-password').value;
+  const { user, error } = await supabase.auth.signUp({ email, password });
+  if (error) return document.getElementById('su-error').textContent = error.message;
+  // Insert into profiles table
+  await supabase.from('profiles').insert([{ id: user.id, username }]);
+  // Auto-login
+  showApp();
+});
 
-logoutButton.onclick = async () => {
-  await supabase.auth.signOut();
-  document.getElementById('auth').classList.remove('hidden');
-  document.getElementById('dashboard').classList.add('hidden');
-};
+// Login
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const email = document.getElementById('li-email').value;
+  const password = document.getElementById('li-password').value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return document.getElementById('li-error').textContent = error.message;
+  showApp();
+});
 
-function showView(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-}
-
-profileForm.onsubmit = async (e) => {
-  e.preventDefault();
-  const user = (await supabase.auth.getUser()).data.user;
-  const first_name = document.getElementById('first_name').value;
-  const last_name = document.getElementById('last_name').value;
-  const gender = document.querySelector('input[name="gender"]:checked')?.value;
-
-  const { error } = await supabase.from('profiles').update({ first_name, last_name, gender }).eq('id', user.id);
-  if (error) return alert(error.message);
-  alert('Profile updated');
-  loadProfile();
-};
-
-async function loadDashboard() {
-  document.getElementById('auth').classList.add('hidden');
-  document.getElementById('dashboard').classList.remove('hidden');
-  showView('home');
+// Show main app
+async function showApp() {
+  authContainer.classList.add('hidden');
+  appContainer.classList.remove('hidden');
   await loadProfile();
 }
 
+// Load profile data
 async function loadProfile() {
-  const user = (await supabase.auth.getUser()).data.user;
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-
-  if (!error) {
-    document.getElementById('profile-username').textContent = data.username;
-    document.getElementById('profile-fullname').textContent = `${data.first_name || ''} ${data.last_name || ''}`;
-    document.getElementById('profile-coins').textContent = data.coins ?? 0;
-    if (data.avatar_url) document.getElementById('avatar').src = data.avatar_url;
-    document.getElementById('first_name').value = data.first_name || '';
-    document.getElementById('last_name').value = data.last_name || '';
-    if (data.gender) {
-      document.querySelector(`input[name="gender"][value="${data.gender}"]`)?.click();
-    }
+  const user = supabase.auth.getUser();
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', (await user).data.user.id).single();
+  if (error) return console.error(error);
+  // Populate profile UI
+  document.getElementById('disp-username').textContent = data.username;
+  document.getElementById('disp-fullname').textContent = `${data.first_name || ''} ${data.last_name || ''}`;
+  document.getElementById('disp-coins').textContent = data.coins;
+  if (data.avatar_url) {
+    const img = document.getElementById('avatar-img');
+    img.src = data.avatar_url; img.classList.remove('hidden');
   }
+  // Fill edit form
+  document.getElementById('first_name').value = data.first_name;
+  document.getElementById('last_name').value = data.last_name;
+  document.querySelector(`input[name=gender][value="${data.gender}"]`).checked = true;
 }
 
-supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) loadDashboard();
+// Update profile
+document.getElementById('btn-update').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const user = await supabase.auth.getUser();
+  const updates = {
+    id: user.data.user.id,
+    first_name: document.getElementById('first_name').value,
+    last_name: document.getElementById('last_name').value,
+    gender: document.querySelector('input[name=gender]:checked').value
+  };
+  const { error } = await supabase.from('profiles').update(updates).eq('id', updates.id);
+  document.getElementById('profile-error').textContent = error ? error.message : 'Profile updated!';
+});
+
+// Logout
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  window.location.reload();
 });
