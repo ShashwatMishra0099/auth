@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Test Dashboard with Supabase Auth</title>
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
     body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background:#f5f5f5; color:#333; }
@@ -25,7 +24,7 @@
 </head>
 <body>
 
-  <!-- SIGN-UP / LOGIN -->
+  <!-- AUTH UI -->
   <div id="auth-container" class="container">
     <h2 id="auth-title">Sign Up</h2>
     <div id="error-msg" class="error hidden"></div>
@@ -37,7 +36,7 @@
     </p>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- APP UI -->
   <div id="app" class="hidden">
     <div id="view-home" class="container">
       <h2>Welcome!</h2>
@@ -46,7 +45,7 @@
 
     <div id="view-account" class="container hidden">
       <div class="profile-header">
-        <img id="avatar-img" src="" alt="Avatar" onerror="this.src='https://via.placeholder.com/80'"/>
+        <img id="avatar-img" src="https://via.placeholder.com/80" alt="Avatar"/>
         <h3 id="display-username"></h3>
         <p>Coins: <span id="display-coins">0</span></p>
       </div>
@@ -65,7 +64,6 @@
       <button id="logout" style="background:#dc2626;">Log Out</button>
     </div>
 
-    <!-- Footer Navigation -->
     <div class="footer">
       <button id="nav-home">Home</button>
       <button id="nav-account">Account</button>
@@ -73,12 +71,12 @@
   </div>
 
   <script>
-    // --- CONFIGURE SUPABASE ---
+    // ——— CONFIGURE SUPABASE ———
     const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // --- ELEMENTS ---
+    // ——— ELEMENTS ———
     const authContainer = document.getElementById('auth-container');
     const authTitle     = document.getElementById('auth-title');
     const emailInput    = document.getElementById('email');
@@ -105,53 +103,64 @@
 
     let isLogin = false;
 
-    // --- AUTH HANDLERS ---
+    // ——— HELPERS ———
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.remove('hidden');
+      console.error(msg);
+    }
+    function clearError() {
+      errorMsg.classList.add('hidden');
+    }
+
+    // ——— TOGGLE SIGNUP / LOGIN ———
     toggleAuth.addEventListener('click', e => {
       e.preventDefault();
+      clearError();
       isLogin = !isLogin;
       authTitle.textContent = isLogin ? 'Log In' : 'Sign Up';
       authButton.textContent = isLogin ? 'Log In' : 'Create Account';
       toggleAuth.textContent = isLogin
         ? "Don't have an account? Sign up"
         : 'Already have an account? Log in';
-      errorMsg.classList.add('hidden');
     });
 
+    // ——— AUTH BUTTON ———
     authButton.addEventListener('click', async () => {
-      errorMsg.classList.add('hidden');
-      const email = emailInput.value;
-      const pass  = passInput.value;
-      if (!email || !pass) {
-        errorMsg.textContent = 'Please enter email and password.';
-        errorMsg.classList.remove('hidden');
-        return;
-      }
+      clearError();
+      const email = emailInput.value.trim();
+      const pass  = passInput.value.trim();
+      if (!email || !pass) return showError('Email and password are required.');
 
+      console.log(`${isLogin ? 'Logging in' : 'Signing up'} with`, email);
       let res;
       if (isLogin) {
-        res = await supabase.auth.signInWithPassword({ email, password: pass });
+        res = await supabaseClient.auth.signInWithPassword({ email, password: pass });
       } else {
-        res = await supabase.auth.signUp({ email, password: pass });
+        res = await supabaseClient.auth.signUp({ email, password: pass });
       }
+      console.log('Supabase response:', res);
 
       if (res.error) {
-        errorMsg.textContent = res.error.message;
-        errorMsg.classList.remove('hidden');
-      } else {
-        // on signup, also insert into profiles table
-        if (!isLogin) {
-          await supabase
-            .from('profiles')
-            .insert({ id: res.data.user.id, username: email });
-        }
-        // show main app
-        authContainer.classList.add('hidden');
-        app.classList.remove('hidden');
-        loadProfile();
+        return showError(res.error.message);
       }
+
+      // On sign-up, also seed profiles table
+      if (!isLogin && res.data.user) {
+        console.log('Inserting profile row for', res.data.user.id);
+        const { error: insertErr } = await supabaseClient
+          .from('profiles')
+          .insert({ id: res.data.user.id, username: email });
+        if (insertErr) console.error('Profile insert error:', insertErr);
+      }
+
+      // Show main app & load profile
+      authContainer.classList.add('hidden');
+      app.classList.remove('hidden');
+      loadProfile();
     });
 
-    // --- NAVIGATION ---
+    // ——— NAVIGATION ———
     navHomeBtn.addEventListener('click', () => {
       viewHome.classList.remove('hidden');
       viewAccount.classList.add('hidden');
@@ -161,61 +170,66 @@
       viewAccount.classList.remove('hidden');
     });
 
-    // --- PROFILE LOADING & UPDATING ---
+    // ——— LOAD PROFILE ———
     async function loadProfile() {
-      const user = supabase.auth.getUser().then(r => r.data.user);
-      const { data, error } = await supabase
+      console.log('Loading profile…');
+      const { data: userData } = await supabaseClient.auth.getUser();
+      if (!userData.user) return showError('No user session found.');
+
+      const { data, error } = await supabaseClient
         .from('profiles')
         .select('*')
-        .eq('id', (await user).id)
+        .eq('id', userData.user.id)
         .single();
+      console.log('Profile record:', data, error);
+      if (error) return showError(error.message);
 
-      if (error) {
-        console.error(error);
-        return;
-      }
-      // populate UI
-      avatarImg.src       = data.avatar_url || avatarImg.src;
+      avatarImg.src        = data.avatar_url || avatarImg.src;
       dispUser.textContent = data.username;
-      dispCoins.textContent = data.coins;
+      dispCoins.textContent= data.coins;
       firstNameIn.value    = data.first_name || '';
-      lastNameIn.value     = data.last_name || '';
-      genderIn.value       = data.gender || '';
+      lastNameIn.value     = data.last_name  || '';
+      genderIn.value       = data.gender     || '';
     }
 
+    // ——— UPDATE PROFILE ———
     updateBtn.addEventListener('click', async () => {
       successMsg.classList.add('hidden');
-      const user = await supabase.auth.getUser().then(r => r.data.user);
+      const { data: userData } = await supabaseClient.auth.getUser();
+      if (!userData.user) return showError('No user to update.');
+
       const updates = {
-        id: user.id,
+        id:         userData.user.id,
         first_name: firstNameIn.value,
-        last_name: lastNameIn.value,
-        gender: genderIn.value,
+        last_name:  lastNameIn.value,
+        gender:     genderIn.value
       };
-      const { error } = await supabase
+      console.log('Updating profile with', updates);
+      const { error } = await supabaseClient
         .from('profiles')
         .upsert(updates, { onConflict: 'id' });
-      if (error) {
-        alert('Error updating profile');
-      } else {
-        successMsg.textContent = 'Profile updated!';
-        successMsg.classList.remove('hidden');
-        loadProfile();
-      }
+      if (error) return showError(error.message);
+
+      successMsg.textContent = 'Profile updated!';
+      successMsg.classList.remove('hidden');
+      loadProfile();
     });
 
-    // --- LOGOUT ---
+    // ——— LOGOUT ———
     logoutBtn.addEventListener('click', async () => {
-      await supabase.auth.signOut();
+      console.log('Signing out…');
+      await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
       emailInput.value = '';
       passInput.value  = '';
     });
 
-    // --- ON PAGE LOAD: CHECK SESSION ---
+    // ——— ON PAGE LOAD: CHECK SESSION ———
     window.addEventListener('load', async () => {
-      const { data } = await supabase.auth.getSession();
+      console.log('Checking for existing session…');
+      const { data } = await supabaseClient.auth.getSession();
+      console.log('Session data:', data);
       if (data.session) {
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
