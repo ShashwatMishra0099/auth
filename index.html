@@ -3,51 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Test Dashboard</title>
+  <title>Supabase Auth & Profile Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="auth">
-    <h2>Login</h2>
-    <input type="text" id="login-username" placeholder="Username" />
-    <input type="password" id="login-password" placeholder="Password" />
-    <button id="login-button">Login</button>
-
-    <h2>Sign Up</h2>
-    <input type="text" id="signup-username" placeholder="Username" />
-    <input type="password" id="signup-password" placeholder="Password" />
-    <button id="signup-button">Sign Up</button>
-  </div>
-
-  <div id="dashboard" class="hidden">
-    <div id="nav">
-      <button onclick="showView('home')">Home</button>
-      <button onclick="showView('account')">Account</button>
+  <!-- Auth Screens -->
+  <div id="auth-container">
+    <!-- Toggle between Sign-Up & Login -->
+    <div id="signup-screen" class="screen hidden">
+      <h2>Sign Up</h2>
+      <input id="su-username" placeholder="Username" />
+      <input id="su-email" type="email" placeholder="Email" />
+      <input id="su-password" type="password" placeholder="Password" />
+      <button id="btn-signup">Sign Up</button>
+      <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+      <p id="su-error" class="error"></p>
     </div>
 
-    <div id="home" class="view">Welcome to your dashboard!</div>
+    <div id="login-screen" class="screen">
+      <h2>Login</h2>
+      <input id="li-email" type="email" placeholder="Email" />
+      <input id="li-password" type="password" placeholder="Password" />
+      <button id="btn-login">Login</button>
+      <p>Need an account? <a href="#" id="show-signup">Sign Up</a></p>
+      <p id="li-error" class="error"></p>
+    </div>
+  </div>
 
-    <div id="account" class="view hidden">
-      <h2>Profile</h2>
-      <img id="avatar" src="" alt="Avatar" class="avatar" />
-      <p><strong>Username:</strong> <span id="profile-username"></span></p>
-      <p><strong>Full Name:</strong> <span id="profile-fullname"></span></p>
-      <p><strong>Coins:</strong> <span id="profile-coins"></span></p>
+  <!-- Main App Interface -->
+  <div id="app-container" class="hidden">
+    <header>
+      <nav>
+        <button id="nav-home">Home</button>
+        <button id="nav-account">Account</button>
+        <button id="btn-logout">Logout</button>
+      </nav>
+    </header>
 
-      <form id="profile-form">
-        <input type="text" id="first_name" placeholder="First Name" />
-        <input type="text" id="last_name" placeholder="Last Name" />
-        <div>
-          <label><input type="radio" name="gender" value="Male" /> Male</label>
-          <label><input type="radio" name="gender" value="Female" /> Female</label>
+    <main>
+      <section id="home-screen" class="screen">
+        <h1>Welcome!</h1>
+        <p>This is your dashboard overview.</p>
+      </section>
+
+      <section id="account-screen" class="screen hidden">
+        <h1>Account Profile</h1>
+        <div id="profile-header">
+          <img id="avatar-img" src="" alt="Avatar" class="avatar hidden" />
+          <p><strong>Username:</strong> <span id="disp-username"></span></p>
+          <p><strong>Full Name:</strong> <span id="disp-fullname"></span></p>
+          <p><strong>Coins:</strong> <span id="disp-coins"></span></p>
         </div>
-        <button type="submit">Update</button>
-      </form>
-      <button id="logout-button">Log Out</button>
-    </div>
-  </div>
+        <form id="profile-form">
+          <input id="first_name" placeholder="First Name" />
+          <input id="last_name" placeholder="Last Name" />
+          <div>
+            <label><input type="radio" name="gender" value="Male" /> Male</label>
+            <label><input type="radio" name="gender" value="Female" /> Female</label>
+          </div>
+          <button id="btn-update">Update Profile</button>
+        </form>
+        <p id="profile-error" class="error"></p>
+      </section>
+    </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="script.js"></script>
+    <script src="script.js"></script>
+  </div>
 </body>
 </html>
