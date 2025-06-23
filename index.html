@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -17,153 +16,145 @@
       flex-direction: column;
     }
     a { color: #d4af37; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a:hover { text-decoration: underline; }/* ===== Containers ===== */
+.container {
+  width: 90%;
+  max-width: 420px;
+  margin: 4rem auto;
+  background: #1a1a1a;
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(212,175,55,0.5);
+  padding: 2rem;
+}
+.hidden { display: none; }
 
-    /* ===== Containers ===== */
-    .container {
-      width: 90%;
-      max-width: 420px;
-      margin: 4rem auto;
-      background: #1a1a1a;
-      border: 2px solid #d4af37;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(212,175,55,0.5);
-      padding: 2rem;
-    }
-    .hidden { display: none; }
+/* ===== Headings ===== */
+h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  text-align: center;
+  color: #d4af37;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+}
+p.subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  color: #aaa;
+}
 
-    /* ===== Headings ===== */
-    h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      text-align: center;
-      color: #d4af37;
-      margin-bottom: 1.5rem;
-      letter-spacing: 1px;
-    }
-    p.subtitle {
-      text-align: center;
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
-      color: #aaa;
-    }
+/* ===== Inputs & Buttons ===== */
+input, select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #e0dede;
+  font-size: 1rem;
+}
+input:focus, select:focus { outline: 2px solid #d4af37; }
 
-    /* ===== Inputs & Buttons ===== */
-    input, select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-      background: #0f0f0f;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: #e0dede;
-      font-size: 1rem;
-    }
-    input:focus, select:focus { outline: 2px solid #d4af37; }
+button {
+  width: 100%;
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #d4af37, #b5912b);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212,175,55,0.4);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-    button {
-      width: 100%;
-      padding: 0.85rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, #d4af37, #b5912b);
-      border: none;
-      border-radius: 8px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
-      letter-spacing: 1px;
-      color: #0a0a0a;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(212,175,55,0.4);
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+/* ===== Error & Success ===== */
+.error, .success {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+.error {
+  background: #3b0000;
+  color: #ffa3a3;
+}
+.success {
+  background: #003b00;
+  color: #a3ffa3;
+}
 
-    /* ===== Error & Success ===== */
-    .error, .success {
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      text-align: center;
-      border-radius: 6px;
-      padding: 0.5rem;
-    }
-    .error {
-      background: #3b0000;
-      color: #ffa3a3;
-    }
-    .success {
-      background: #003b00;
-      color: #a3ffa3;
-    }
+/* ===== Profile Header ===== */
+.profile-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.profile-header img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #d4af37;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+.profile-header h3 {
+  font-family: 'Orbitron', sans-serif;
+  color: #d4af37;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.5px;
+}
+.profile-header p {
+  font-size: 0.9rem;
+  color: #ccc;
+}
 
-    /* ===== Profile Header ===== */
-    .profile-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .profile-header img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #d4af37;
-      object-fit: cover;
-      margin-bottom: 0.5rem;
-    }
-    .profile-header h3 {
-      font-family: 'Orbitron', sans-serif;
-      color: #d4af37;
-      margin-bottom: 0.25rem;
-      letter-spacing: 0.5px;
-    }
-    .profile-header p {
-      font-size: 0.9rem;
-      color: #ccc;
-    }
+/* ===== Footer Nav ===== */
+.footer {
+  margin-top: auto;
+  display: flex;
+  background: #121212;
+  border-top: 2px solid #333;
+}
+.footer button {
+  flex: 1;
+  border-radius: 0;
+  background: none;
+  color: #e0dede;
+  border: none;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  transition: background 0.2s;
+}
+.footer button:hover, .footer .active {
+  background: #1f1f1f;
+  color: #d4af37;
+}
 
-    /* ===== Footer Nav ===== */
-    .footer {
-      margin-top: auto;
-      display: flex;
-      background: #121212;
-      border-top: 2px solid #333;
-    }
-    .footer button {
-      flex: 1;
-      border-radius: 0;
-      background: none;
-      color: #e0dede;
-      border: none;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 0.5px;
-      padding: 1rem;
-      transition: background 0.2s;
-    }
-    .footer button:hover, .footer .active {
-      background: #1f1f1f;
-      color: #d4af37;
-    }
+/* ===== Misc ===== */
+label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #ccc;
+}
 
-    /* ===== Misc ===== */
-    label {
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-      display: block;
-      color: #ccc;
-    }
-  </style>
-
-  <!-- Supabase Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-
-  <!-- AUTH UI -->
-  <div id="auth-container" class="container">
+  </style>  <!-- Supabase Client -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body>  <!-- AUTH UI -->  <div id="auth-container" class="container">
     <h2 id="auth-title">Sign Up</h2>
     <p class="subtitle">Access the Pro Tournament Dashboard</p>
     <div id="error-msg" class="error hidden"></div>
@@ -173,48 +164,50 @@
     <p style="text-align:center; color:#777;">
       <a href="#" id="toggle-auth">Already have an account? Log in</a>
     </p>
-  </div>
-
-  <!-- APP UI -->
-  <div id="app" class="hidden">
+  </div>  <!-- APP UI -->  <div id="app" class="hidden">
     <div id="view-home" class="container">
       <h2>Welcome, Gamer!</h2>
       <p class="subtitle">Your pro dashboard awaits. Check your stats & profile.</p>
-    </div>
-
-    <div id="view-account" class="container hidden">
-      <div class="profile-header">
-        <img id="avatar-img" src="https://via.placeholder.com/100" alt="Avatar"/>
-        <h3 id="display-username">Username</h3>
-        <p>Coins: <span id="display-coins">0</span></p>
-      </div>
-      <div id="success-msg" class="success hidden"></div>
-      <label for="first_name">First Name</label>
-      <input type="text" id="first_name" placeholder="Your first name"/>
-      <label for="last_name">Last Name</label>
-      <input type="text" id="last_name" placeholder="Your last name"/>
-      <label for="gender">Gender</label>
-      <select id="gender">
-        <option value="">Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
-      </select>
-      <button id="update-profile">Update Profile</button>
-      <button id="logout" style="background:#d32f2f; margin-top:0.5rem;">Log Out</button>
-    </div>
-
-    <!-- Footer Navigation -->
-    <div class="footer">
-      <button id="nav-home" class="active">Home</button>
-      <button id="nav-account">Account</button>
-    </div>
+    </div><div id="view-account" class="container hidden">
+  <div class="profile-header">
+    <img id="avatar-img" src="https://via.placeholder.com/100" alt="Avatar"/>
+    <h3 id="display-username">Username</h3>
+    <p>Coins: <span id="display-coins">0</span></p>
   </div>
+  <div id="success-msg" class="success hidden"></div>
+  <label for="first_name">First Name</label>
+  <input type="text" id="first_name" placeholder="Your first name"/>
+  <label for="last_name">Last Name</label>
+  <input type="text" id="last_name" placeholder="Your last name"/>
+  <label for="gender">Gender</label>
+  <select id="gender">
+    <option value="">Select Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+  </select>
+  <button id="update-profile">Update Profile</button>
+  <button id="logout" style="background:#d32f2f; margin-top:0.5rem;">Log Out</button>
+</div>
 
-  <script>
+<!-- Footer Navigation -->
+<div class="footer">
+  <button id="nav-home" class="active">Home</button>
+  <button id="nav-account">Account</button>
+</div>
+
+  </div>  <script>
     // ——— CONFIGURE SUPABASE ———
-    const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_KEY = 'YOUR_ANON_KEY';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ——— AVATAR POOL ———
+    const AVATARS = [
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_154647_182.jpg",
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_155317_564.jpg",
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_155320_645.jpg",
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_155833_404.jpg"
+    ];
 
     // ——— ELEMENTS ———
     const authContainer = document.getElementById('auth-container');
@@ -278,7 +271,7 @@
       }
       if (res.error) return showError(res.error.message);
 
-      // Ensure profile exists
+      // Ensure profile exists with random avatar on sign-up
       const user = res.data.user;
       const { data: existing } = await supabaseClient
         .from('profiles')
@@ -286,9 +279,10 @@
         .eq('id', user.id)
         .single();
       if (!existing) {
+        const randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
         await supabaseClient
           .from('profiles')
-          .insert({ id: user.id, username: email });
+          .insert({ id: user.id, username: email, avatar_url: randomAvatar });
       }
 
       authContainer.classList.add('hidden');
@@ -296,29 +290,18 @@
       loadProfile();
     });
 
-    // Navigation
-    function setActive(button) {
-      [navHomeBtn, navAccountBtn].forEach(b => b.classList.remove('active'));
-      button.classList.add('active');
-    }
-    navHomeBtn.addEventListener('click', () => {
-      setActive(navHomeBtn);
-      viewHome.classList.remove('hidden');
-      viewAccount.classList.add('hidden');
-    });
-    navAccountBtn.addEventListener('click', () => {
-      setActive(navAccountBtn);
-      viewHome.classList.add('hidden');
-      viewAccount.classList.remove('hidden');
-    });
+    // Navigation helpers
+    function setActive(btn) { document.querySelectorAll('.footer button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+    navHomeBtn.addEventListener('click', () => { setActive(navHomeBtn); viewHome.classList.remove('hidden'); viewAccount.classList.add('hidden'); });
+    navAccountBtn.addEventListener('click', () => { setActive(navAccountBtn); viewHome.classList.add('hidden'); viewAccount.classList.remove('hidden'); });
 
     // Load profile data
     async function loadProfile() {
-      const { data: userData } = await supabaseClient.auth.getUser();
+      const { data: u } = await supabaseClient.auth.getUser();
       const { data, error } = await supabaseClient
         .from('profiles')
         .select('*')
-        .eq('id', userData.user.id)
+        .eq('id', u.user.id)
         .single();
       if (error) return showError(error.message);
 
@@ -331,41 +314,4 @@
     }
 
     // Update profile fields
-    updateBtn.addEventListener('click', async () => {
-      successMsg.classList.add('hidden');
-      const { data: userData } = await supabaseClient.auth.getUser();
-      const updates = {
-        first_name: firstNameIn.value,
-        last_name:  lastNameIn.value,
-        gender:     genderIn.value,
-      };
-      const { error } = await supabaseClient
-        .from('profiles')
-        .update(updates)
-        .eq('id', userData.user.id);
-      if (error) return showError(error.message);
-
-      successMsg.textContent = 'Profile updated!';
-      successMsg.classList.remove('hidden');
-      loadProfile();
-    });
-
-    // Log out
-    logoutBtn.addEventListener('click', async () => {
-      await supabaseClient.auth.signOut();
-      app.classList.add('hidden');
-      authContainer.classList.remove('hidden');
-    });
-
-    // On page load, restore session if any
-    window.addEventListener('load', async () => {
-      const { data } = await supabaseClient.auth.getSession();
-      if (data.session) {
-        authContainer.classList.add('hidden');
-        app.classList.remove('hidden');
-        loadProfile();
-      }
-    });
-  </script>
-</body>
-</html>
+    updateBtn.addEventListener('click', async (
