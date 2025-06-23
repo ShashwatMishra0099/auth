@@ -103,7 +103,6 @@
 
     let isLogin = false;
 
-    // ——— HELPERS ———
     function showError(msg) {
       errorMsg.textContent = msg;
       errorMsg.classList.remove('hidden');
@@ -113,60 +112,69 @@
       errorMsg.classList.add('hidden');
     }
 
-    // ——— TOGGLE SIGNUP / LOGIN ———
+    // Toggle between Sign-Up and Log-In
     toggleAuth.addEventListener('click', e => {
       e.preventDefault();
       clearError();
       isLogin = !isLogin;
-      authTitle.textContent = isLogin ? 'Log In' : 'Sign Up';
+      authTitle.textContent  = isLogin ? 'Log In' : 'Sign Up';
       authButton.textContent = isLogin ? 'Log In' : 'Create Account';
       toggleAuth.textContent = isLogin
         ? "Don't have an account? Sign up"
         : 'Already have an account? Log in';
     });
 
-    // ——— AUTH BUTTON ———
+    // Handle Sign-Up / Log-In button
     authButton.addEventListener('click', async () => {
       clearError();
       const email = emailInput.value.trim();
       const pass  = passInput.value.trim();
       if (!email || !pass) return showError('Email and password are required.');
 
-      console.log(`${isLogin ? 'Logging in' : 'Signing up'} with`, email);
       let res;
       if (isLogin) {
+        console.log('Logging in:', email);
         res = await supabaseClient.auth.signInWithPassword({ email, password: pass });
       } else {
-        res = await supabaseClient.auth.signUp({ email, password: pass });
+        console.log('Signing up:', email);
+        // Force “instant” confirmation by providing a redirect (no actual email step)
+        res = await supabaseClient.auth.signUp(
+          { email, password: pass },
+          { emailRedirectTo: window.location.origin }
+        );
+        // immediately log in so we get a session
+        if (!res.error) {
+          const loginRes = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+          res = loginRes;
+        }
       }
-      console.log('Supabase auth response:', res);
+      console.log('Auth response:', res);
 
       if (res.error) {
         return showError(res.error.message);
       }
 
-      // Ensure a profile row exists (on both sign-up AND login)
+      // Ensure a profile row exists
       const user = res.data.user;
-      const { data: existing, error: fetchErr } = await supabaseClient
+      const { data: existing } = await supabaseClient
         .from('profiles')
         .select('id')
         .eq('id', user.id)
         .single();
-      if (fetchErr || !existing) {
-        console.log('Seeding profiles table for', user.id);
-        const { error: insertErr } = await supabaseClient
+      if (!existing) {
+        console.log('Seeding profiles for', user.id);
+        await supabaseClient
           .from('profiles')
           .insert({ id: user.id, username: email });
-        if (insertErr) console.error('Profile insert error:', insertErr);
       }
 
-      // Show main app & load profile
+      // Show the app
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
       loadProfile();
     });
 
-    // ——— NAVIGATION ———
+    // Navigation
     navHomeBtn.addEventListener('click', () => {
       viewHome.classList.remove('hidden');
       viewAccount.classList.add('hidden');
@@ -176,18 +184,16 @@
       viewAccount.classList.remove('hidden');
     });
 
-    // ——— LOAD PROFILE ———
+    // Load profile data
     async function loadProfile() {
-      console.log('Loading profile…');
       const { data: userData } = await supabaseClient.auth.getUser();
-      if (!userData.user) return showError('No user session found.');
+      if (!userData.user) return showError('No active session.');
 
       const { data, error } = await supabaseClient
         .from('profiles')
         .select('*')
         .eq('id', userData.user.id)
         .single();
-      console.log('Profile record:', data, error);
       if (error) return showError(error.message);
 
       avatarImg.src         = data.avatar_url || avatarImg.src;
@@ -198,7 +204,7 @@
       genderIn.value        = data.gender     || '';
     }
 
-    // ——— UPDATE PROFILE ———
+    // Update profile fields (only those three columns)
     updateBtn.addEventListener('click', async () => {
       successMsg.classList.add('hidden');
       const { data: userData } = await supabaseClient.auth.getUser();
@@ -207,9 +213,8 @@
       const updates = {
         first_name: firstNameIn.value,
         last_name:  lastNameIn.value,
-        gender:     genderIn.value
+        gender:     genderIn.value,
       };
-      console.log('Updating profile fields:', updates);
       const { error } = await supabaseClient
         .from('profiles')
         .update(updates)
@@ -221,9 +226,8 @@
       loadProfile();
     });
 
-    // ——— LOGOUT ———
+    // Log out
     logoutBtn.addEventListener('click', async () => {
-      console.log('Signing out…');
       await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
@@ -231,11 +235,9 @@
       passInput.value  = '';
     });
 
-    // ——— ON PAGE LOAD: CHECK SESSION ———
+    // On page load, restore session if any
     window.addEventListener('load', async () => {
-      console.log('Checking for existing session…');
       const { data } = await supabaseClient.auth.getSession();
-      console.log('Session data:', data);
       if (data.session) {
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
