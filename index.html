@@ -139,18 +139,24 @@
       } else {
         res = await supabaseClient.auth.signUp({ email, password: pass });
       }
-      console.log('Supabase response:', res);
+      console.log('Supabase auth response:', res);
 
       if (res.error) {
         return showError(res.error.message);
       }
 
-      // On sign-up, also seed profiles table
-      if (!isLogin && res.data.user) {
-        console.log('Inserting profile row for', res.data.user.id);
+      // Ensure a profile row exists (on both sign-up AND login)
+      const user = res.data.user;
+      const { data: existing, error: fetchErr } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+      if (fetchErr || !existing) {
+        console.log('Seeding profiles table for', user.id);
         const { error: insertErr } = await supabaseClient
           .from('profiles')
-          .insert({ id: res.data.user.id, username: email });
+          .insert({ id: user.id, username: email });
         if (insertErr) console.error('Profile insert error:', insertErr);
       }
 
@@ -184,12 +190,12 @@
       console.log('Profile record:', data, error);
       if (error) return showError(error.message);
 
-      avatarImg.src        = data.avatar_url || avatarImg.src;
-      dispUser.textContent = data.username;
-      dispCoins.textContent= data.coins;
-      firstNameIn.value    = data.first_name || '';
-      lastNameIn.value     = data.last_name  || '';
-      genderIn.value       = data.gender     || '';
+      avatarImg.src         = data.avatar_url || avatarImg.src;
+      dispUser.textContent  = data.username;
+      dispCoins.textContent = data.coins;
+      firstNameIn.value     = data.first_name || '';
+      lastNameIn.value      = data.last_name  || '';
+      genderIn.value        = data.gender     || '';
     }
 
     // ——— UPDATE PROFILE ———
@@ -199,15 +205,15 @@
       if (!userData.user) return showError('No user to update.');
 
       const updates = {
-        id:         userData.user.id,
         first_name: firstNameIn.value,
         last_name:  lastNameIn.value,
         gender:     genderIn.value
       };
-      console.log('Updating profile with', updates);
+      console.log('Updating profile fields:', updates);
       const { error } = await supabaseClient
         .from('profiles')
-        .upsert(updates, { onConflict: 'id' });
+        .update(updates)
+        .eq('id', userData.user.id);
       if (error) return showError(error.message);
 
       successMsg.textContent = 'Profile updated!';
