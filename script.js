@@ -1,74 +1,103 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
 // Initialize Supabase Client
-const supabaseUrl = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = 'https://xdyzijzaidzmwpvmdvzd.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 // DOM Elements
-const signupView = document.getElementById('signup-view');
-const loginView = document.getElementById('login-view');
-const mainInterface = document.getElementById('main-interface');
+const authContainer = document.getElementById('auth-container')
+const signupView = document.getElementById('signup-view')
+const loginView = document.getElementById('login-view')
+const mainInterface = document.getElementById('main-interface')
 
-// ... (Event listeners for toggling views) ...
-document.getElementById('show-login').onclick = () => { signupView.classList.add('hidden'); loginView.classList.remove('hidden'); };
-document.getElementById('show-signup').onclick = () => { loginView.classList.add('hidden'); signupView.classList.remove('hidden'); };
+// Toggle between SignUp/Login
+document.getElementById('show-login').addEventListener('click', () => {
+  signupView.classList.add('hidden')
+  loginView.classList.remove('hidden')
+})
+
+document.getElementById('show-signup').addEventListener('click', () => {
+  loginView.classList.add('hidden')
+  signupView.classList.remove('hidden')
+})
+
+// On page load check session
+window.addEventListener('load', async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user) loadMainInterface(session.user)
+})
 
 // Sign Up
-document.getElementById('signup-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('su-username').value;
-  const password = document.getElementById('su-password').value;
-  const { user, error } = await supabase.auth.signUp({ email: username, password });
-  if (error) return document.getElementById('signup-error').innerText = error.message;
-  // Create profile record
-  await supabase.from('profiles').insert([{ id: user.id, username }]);
-  loadMainInterface();
-});
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearError('signup-error')
+  const email = suUsername.value
+  const password = suPassword.value
+  const { data, error } = await supabase.auth.signUp({ email, password })
+  if (error) return showError('signup-error', error.message)
+  // Auto sign in
+  const { data: signin, error: signinErr } = await supabase.auth.signInWithPassword({ email, password })
+  if (signinErr) return showError('signup-error', signinErr.message)
+  // Ensure profile exists
+  await supabase.from('profiles').upsert([{ id: signin.user.id, username: email }])
+})
 
 // Login
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('li-username').value;
-  const password = document.getElementById('li-password').value;
-  const { session, error } = await supabase.auth.signInWithPassword({ email: username, password });
-  if (error) return document.getElementById('login-error').innerText = error.message;
-  loadMainInterface();
-});
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearError('login-error')
+  const email = liUsername.value
+  const password = liPassword.value
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) return showError('login-error', error.message)
+})
 
-// Load Main
-async function loadMainInterface() {
-  const user = supabase.auth.getUser();
-  if (!user) return;
+// Auth state change listener
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (session?.user) loadMainInterface(session.user)
+})
 
-  // Hide auth, show main
-  document.getElementById('auth-container').classList.add('hidden');
-  mainInterface.classList.remove('hidden');
+// Load Main Interfacesync function loadMainInterface(user) {
+  authContainer.classList.add('hidden')
+  mainInterface.classList.remove('hidden')
 
-  // Fetch profile
-  const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-  document.getElementById('display-username').innerText = data.username;
-  document.getElementById('profile-username').innerText = data.username;
-  document.getElementById('profile-fullname').innerText = `${data.first_name || ''} ${data.last_name || ''}`;
-  document.getElementById('profile-coins').innerText = data.coins;
-  if (data.avatar_url) document.getElementById('avatar').src = data.avatar_url;
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+  if (error) return console.error('Profile fetch error', error)
+
+  displayUsername.textContent = profile.username
+  profileUsername.textContent = profile.username
+  profileFullname.textContent = `${profile.first_name || ''} ${profile.last_name || ''}`
+  profileCoins.textContent = profile.coins
+  if (profile.avatar_url) avatar.src = profile.avatar_url
 }
 
 // Update Profile
-document.getElementById('update-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const user = supabase.auth.getUser();
+updateForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  clearError('update-error')
+  const { data: { user } } = await supabase.auth.getUser()
   const updates = {
     id: user.id,
-    first_name: document.getElementById('first-name').value,
-    last_name: document.getElementById('last-name').value,
+    first_name: firstName.value,
+    last_name: lastName.value,
     gender: document.querySelector('input[name="gender"]:checked')?.value
-  };
-  const { error } = await supabase.from('profiles').upsert(updates);
-  if (error) return document.getElementById('update-error').innerText = error.message;
-  loadMainInterface();
-});
+  }
+  const { error } = await supabase.from('profiles').upsert(updates)
+  if (error) return showError('update-error', error.message)
+  loadMainInterface(user)
+})
 
 // Logout
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  await supabase.auth.signOut();
-  window.location.reload();
-});
+logoutBtn.addEventListener('click', async () => {
+  await supabase.auth.signOut()
+  window.location.reload()
+})
+
+// Helpers
+function showError(id, msg) { document.getElementById(id).textContent = msg }
+function clearError(id) { document.getElementById(id).textContent = '' }
