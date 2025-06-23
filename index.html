@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="auth">
+    <h2>Login</h2>
+    <input type="text" id="login-username" placeholder="Username" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button id="login-button">Login</button>
+
+    <h2>Sign Up</h2>
+    <input type="text" id="signup-username" placeholder="Username" />
+    <input type="password" id="signup-password" placeholder="Password" />
+    <button id="signup-button">Sign Up</button>
+  </div>
+
+  <div id="dashboard" class="hidden">
+    <div id="nav">
+      <button onclick="showView('home')">Home</button>
+      <button onclick="showView('account')">Account</button>
+    </div>
+
+    <div id="home" class="view">Welcome to your dashboard!</div>
+
+    <div id="account" class="view hidden">
+      <h2>Profile</h2>
+      <img id="avatar" src="" alt="Avatar" class="avatar" />
+      <p><strong>Username:</strong> <span id="profile-username"></span></p>
+      <p><strong>Full Name:</strong> <span id="profile-fullname"></span></p>
+      <p><strong>Coins:</strong> <span id="profile-coins"></span></p>
+
+      <form id="profile-form">
+        <input type="text" id="first_name" placeholder="First Name" />
+        <input type="text" id="last_name" placeholder="Last Name" />
+        <div>
+          <label><input type="radio" name="gender" value="Male" /> Male</label>
+          <label><input type="radio" name="gender" value="Female" /> Female</label>
+        </div>
+        <button type="submit">Update</button>
+      </form>
+      <button id="logout-button">Log Out</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
