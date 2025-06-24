@@ -397,7 +397,7 @@
       }
     });
 
-      // Auto-reward winners: once-per-tourney via localStorage
+    // Auto-reward winners: once-per-tourney via localStorage
     async function processRewards(){
       const { data: ud } = await supabaseClient.auth.getUser();
       const uid = ud.user.id;
