@@ -1,85 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pro Tournament Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Work+Sans:wght@300;500&display=swap" rel="stylesheet"/>
   <style>
-    /* Global */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Work Sans', sans-serif; background: #0a0a0a; color: #e0dede; min-height:100vh; display:flex; flex-direction:column; }
-    a { color: #d4af37; text-decoration: none; } a:hover { text-decoration:underline; }
+    /* Global & existing styles ... (unchanged) */
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Work Sans',sans-serif; background:#0a0a0a; color:#e0dede; min-height:100vh; display:flex; flex-direction:column; }
+    .container{width:90%;max-width:420px;margin:4rem auto;background:#1a1a1a;border:2px solid #d4af37;border-radius:12px;padding:2rem;box-shadow:0 0 15px rgba(212,175,55,.5);}
+    .hidden{display:none;}
+    h2{font-family:'Orbitron';font-size:1.8rem;text-align:center;color:#d4af37;margin-bottom:1rem;}
+    p.subtitle{ text-align:center;font-size:.9rem;margin-bottom:1.5rem;color:#aaa;}
+    input,select{width:100%;padding:.75rem 1rem;margin-bottom:1rem;background:#0f0f0f;border:1px solid #333;border-radius:8px;color:#e0dede;}
+    button{width:100%;padding:.85rem;margin-bottom:1rem;background:linear-gradient(135deg,#d4af37,#b5912b);border:none;border-radius:8px;font-family:'Orbitron';color:#0a0a0a;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+    button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,175,55,.4);}
+    button:disabled{opacity:.5;cursor:not-allowed;}
+    .error,.success{font-size:.85rem;margin-bottom:1rem;text-align:center;border-radius:6px;padding:.5rem;}
+    .error{background:#3b0000;color:#ffa3a3;}
+    .success{background:#003b00;color:#a3ffa3;}
+    .profile-header{text-align:center;margin-bottom:1.5rem;}
+    .profile-header img{width:100px;height:100px;border-radius:50%;border:3px solid #d4af37;object-fit:cover;margin-bottom:.5rem;}
+    .profile-header h3{font-family:'Orbitron';color:#d4af37;margin-bottom:.25rem;}
+    .profile-header p{font-size:.9rem;color:#ccc;}
+    .footer{margin-top:auto;display:flex;background:#121212;border-top:2px solid #333;}
+    .footer button{flex:1;background:none;color:#e0dede;border:none;font-family:'Orbitron';padding:1rem;transition:background .2s;}
+    .footer button:hover:not(.disabled), .footer .active{background:#1f1f1f;color:#d4af37;}
+    .footer .disabled{opacity:.5;cursor:not-allowed;}
+    #complete-profile-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999;}
+    #complete-profile-modal.hidden{display:none;}
+    #complete-profile-modal .modal-content{background:#1a1a1a;border:2px solid #d4af37;border-radius:12px;padding:2rem;width:90%;max-width:400px;text-align:center;}
+    #complete-profile-modal h3{font-family:'Orbitron';color:#d4af37;margin-bottom:1rem;}
 
-    /* Containers */
-    .container { width:90%; max-width:420px; margin:4rem auto; background:#1a1a1a; border:2px solid #d4af37; border-radius:12px; padding:2rem; box-shadow:0 0 15px rgba(212,175,55,.5); }
-    .hidden { display:none; }
+    /* Game grid */
+    .game-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;}
+    .game-card{cursor:pointer;border:2px solid #333;border-radius:8px;overflow:hidden;transition:border-color .2s;}
+    .game-card:hover{border-color:#d4af37;}
+    .game-card img{width:100%;display:block;}
+    .game-card h3{text-align:center;margin:.5rem 0;color:#d4af37;font-family:'Orbitron';}
 
-    /* Headings */
-    h2 { font-family:'Orbitron',sans-serif; font-size:1.8rem; text-align:center; color:#d4af37; margin-bottom:1rem; }
-    p.subtitle { text-align:center; font-size:.9rem; margin-bottom:1.5rem; color:#aaa; }
-
-    /* Inputs & buttons */
-    input, select { width:100%; padding:.75rem 1rem; margin-bottom:1rem; background:#0f0f0f; border:1px solid #333; border-radius:8px; color:#e0dede; }
-    input:focus, select:focus { outline:2px solid #d4af37; }
-    button { width:100%; padding:.85rem; margin-bottom:1rem; background:linear-gradient(135deg,#d4af37,#b5912b); border:none; border-radius:8px; font-family:'Orbitron'; color:#0a0a0a; cursor:pointer; transition:transform .15s, box-shadow .15s; }
-    button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(212,175,55,.4); }
-    button:disabled { opacity:.5; cursor:not-allowed; }
-
-    /* Feedback */
-    .error, .success { font-size:.85rem; margin-bottom:1rem; text-align:center; border-radius:6px; padding:.5rem; }
-    .error { background:#3b0000; color:#ffa3a3; }
-    .success { background:#003b00; color:#a3ffa3; }
-
-    /* Profile header */
-    .profile-header { text-align:center; margin-bottom:1.5rem; }
-    .profile-header img { width:100px; height:100px; border-radius:50%; border:3px solid #d4af37; object-fit:cover; margin-bottom:.5rem; }
-    .profile-header h3 { font-family:'Orbitron'; color:#d4af37; margin-bottom:.25rem; }
-    .profile-header p  { font-size:.9rem; color:#ccc; }
-
-    /* Footer nav */
-    .footer { margin-top:auto; display:flex; background:#121212; border-top:2px solid #333; }
-    .footer button { flex:1; background:none; color:#e0dede; border:none; font-family:'Orbitron'; padding:1rem; transition:background .2s; }
-    .footer button:hover:not(.disabled), .footer .active { background:#1f1f1f; color:#d4af37; }
-    .footer .disabled { opacity:.5; cursor:not-allowed; }
-
-    /* Profile modal */
-    #complete-profile-modal { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; z-index:999; }
-    #complete-profile-modal.hidden { display:none; }
-    #complete-profile-modal .modal-content { background:#1a1a1a; border:2px solid #d4af37; border-radius:12px; padding:2rem; width:90%; max-width:400px; text-align:center; }
-    #complete-profile-modal h3 { font-family:'Orbitron'; color:#d4af37; margin-bottom:1rem; }
-
-    /* Home / game selection */
-    .game-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
-    .game-card { cursor:pointer; border:2px solid #333; border-radius:8px; overflow:hidden; transition:border-color .2s; }
-    .game-card:hover { border-color:#d4af37; }
-    .game-card img { width:100%; display:block; }
-    .game-card h3 { text-align:center; margin:.5rem 0; color:#d4af37; font-family:'Orbitron'; }
-
-    /* Tournament list */
-    #view-tourney .container { margin-top:2rem; }
-    #back-to-games { background:none; color:#d4af37; border:none; font-family:'Orbitron'; margin-bottom:1rem; padding:0; cursor:pointer; }
-    #back-to-games:hover { text-decoration:underline; }
-
-    .tourney-item { background:#1a1a1a; border:1px solid #d4af37; padding:1rem; border-radius:8px; margin-bottom:1rem; cursor:pointer; }
-    .tourney-item:hover { background: #262626; }
-    .tourney-row { display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; }
-    .slot-bar-bg { height:10px; background:#333; border-radius:5px; overflow:hidden; margin-bottom:.25rem; }
-    .slot-bar-fill { height:100%; background:#d4af37; width:0; transition:width .3s; }
-    .slot-text { text-align:right; font-size:.8rem; color:#ccc; margin-bottom:.5rem; }
-
-    /* Join button inside tourney */
-    .tourney-item button { width:auto; padding:.5rem 1rem; font-size:.9rem; }
+    /* Tourney list */
+    #view-tourney .container{margin-top:2rem;}
+    #back-to-games{background:none;color:#d4af37;border:none;font-family:'Orbitron';margin-bottom:1rem;padding:0;cursor:pointer;}
+    #back-to-games:hover{text-decoration:underline;}
+    .tourney-item{background:#1a1a1a;border:1px solid #d4af37;padding:1rem;border-radius:8px;margin-bottom:1rem;cursor:pointer;}
+    .tourney-item:hover{background:#262626;}
+    .tourney-row{display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.9rem;}
+    .tourney-row span{color:#d4af37;} /* gold labels */
+    .slot-bar-bg{height:10px;background:#333;border-radius:5px;overflow:hidden;margin-bottom:.25rem;}
+    .slot-bar-fill{height:100%;background:#d4af37;width:0;transition:width .3s;}
+    .slot-text{text-align:right;font-size:.8rem;color:#d4af37;margin-bottom:.5rem;} /* gold count */
+    .tourney-item button{width:auto;padding:.5rem 1rem;font-size:.9rem;margin-top:0;}
 
     /* Detail modal */
-    #tourney-detail-modal { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,.9); display:flex; align-items:center; justify-content:center; z-index:1000; }
-    #tourney-detail-modal.hidden { display:none; }
-    #tourney-detail-modal .modal-box { background:#1a1a1a; border:2px solid #d4af37; border-radius:12px; padding:2rem; width:90%; max-width:500px; color:#e0dede; max-height:90%; overflow-y:auto; }
-    #tourney-detail-modal h3 { font-family:'Orbitron'; color:#d4af37; margin-bottom:1rem; text-align:center; }
-    #tourney-detail-modal p { margin-bottom:1rem; line-height:1.4; }
-    #tourney-detail-modal ul { list-style:none; padding-left:0; }
-    #tourney-detail-modal ul li { margin-bottom:.5rem; }
-    #tourney-detail-modal .close-btn { background:none; border:none; color:#d4af37; font-family:'Orbitron'; float:right; font-size:1.2rem; cursor:pointer; }
+    #tourney-detail-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:1000;}
+    #tourney-detail-modal.hidden{display:none;}
+    #tourney-detail-modal .modal-box{background:#1a1a1a;border:2px solid #d4af37;border-radius:12px;padding:2rem;width:90%;max-width:500px;color:#e0dede;max-height:90%;overflow-y:auto;}
+    #tourney-detail-modal h3{font-family:'Orbitron';color:#d4af37;margin-bottom:1rem;text-align:center;}
+    #tourney-detail-modal p,label{margin-bottom:1rem;line-height:1.4;color:#d4af37;} /* gold text */
+    #tourney-detail-modal ul{list-style:none;padding-left:0;}
+    #tourney-detail-modal ul li{margin-bottom:.5rem;color:#d4af37;}
+    #tourney-detail-modal .close-btn{background:none;border:none;color:#d4af37;font-family:'Orbitron';float:right;font-size:1.2rem;cursor:pointer;}
+
+    /* Credentials container */
+    .cred-container{background:#0a0a0a;border:2px solid #b91c1c;border-radius:8px;padding:1rem;margin-bottom:1rem;}
+    .cred-container h4{margin-bottom:.5rem;color:#b91c1c;}
+    .cred-container p{margin-bottom:.5rem;color:#e0dede;}
+    .cred-container p strong{color:#d4af37;}
   </style>
 </head>
 <body>
@@ -89,8 +77,8 @@
     <h2 id="auth-title">Sign Up</h2>
     <p class="subtitle">Access the Pro Tournament Dashboard</p>
     <div id="error-msg" class="error hidden"></div>
-    <input type="email"    id="email"    placeholder="Your email" />
-    <input type="password" id="password" placeholder="Your password" />
+    <input type="email" id="email" placeholder="Your email"/>
+    <input type="password" id="password" placeholder="Your password"/>
     <button id="auth-button" type="button">Create Account</button>
     <p style="text-align:center;color:#777">
       <a href="#" id="toggle-auth">Already have an account? Log in</a>
@@ -102,16 +90,10 @@
     <div class="modal-content">
       <h3>Complete Your Profile</h3>
       <p class="subtitle">Fill these details to continue</p>
-      <label>First Name</label>
-      <input type="text" id="modal-first-name" placeholder="First Name" />
-      <label>Last Name</label>
-      <input type="text" id="modal-last-name" placeholder="Last Name" />
+      <label>First Name</label><input type="text" id="modal-first-name" placeholder="First Name"/>
+      <label>Last Name</label><input type="text" id="modal-last-name" placeholder="Last Name"/>
       <label>Gender</label>
-      <select id="modal-gender">
-        <option value="">Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
-      </select>
+      <select id="modal-gender"><option value="">Select Gender</option><option>Male</option><option>Female</option></select>
       <button id="modal-save-profile" type="button">Save Profile</button>
     </div>
   </div>
@@ -123,11 +105,11 @@
       <h2>Choose Your Game</h2>
       <div class="game-grid" id="game-list">
         <div class="game-card" data-game="freefire">
-          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg" />
+          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg"/>
           <h3>Free Fire</h3>
         </div>
         <div class="game-card" data-game="bgmi">
-          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download%20(1).jpeg" />
+          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download%20(1).jpeg"/>
           <h3>BGMI</h3>
         </div>
       </div>
@@ -151,9 +133,18 @@
         <p><strong>Map:</strong> <span id="detail-map"></span></p>
         <p><strong>Per Kill:</strong> <span id="detail-pkill"></span></p>
         <p><strong>Join Fee:</strong> <span id="detail-fee"></span></p>
-        <h4>Description:</h4>
+
+        <!-- Credentials for joined users -->
+        <div id="cred-box" class="cred-container hidden">
+          <h4>Credentials</h4>
+          <p><strong>ID:</strong> <span id="detail-cus-id"></span></p>
+          <p><strong>Password:</strong> <span id="detail-cus-pass"></span></p>
+        </div>
+
+        <h4 style="color:#d4af37;margin-bottom:.5rem;">Description:</h4>
         <p id="detail-desc">Loading description…</p>
-        <h4>Joined Members:</h4>
+
+        <h4 style="color:#d4af37;margin-top:1rem;">Joined Members:</h4>
         <ul id="detail-members"><li>Loading…</li></ul>
       </div>
     </div>
@@ -181,7 +172,6 @@
     </div>
   </div>
 
-  <!-- Supabase + Logic -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // Supabase init
@@ -227,6 +217,9 @@
           detailMap     = document.getElementById('detail-map'),
           detailPKill   = document.getElementById('detail-pkill'),
           detailFee     = document.getElementById('detail-fee'),
+          credBox       = document.getElementById('cred-box'),
+          detailCusId   = document.getElementById('detail-cus-id'),
+          detailCusPass = document.getElementById('detail-cus-pass'),
           detailDesc    = document.getElementById('detail-desc'),
           detailMembers = document.getElementById('detail-members');
 
@@ -254,7 +247,7 @@
       errorMsg.classList.add('hidden');
     }
 
-    // Toggle signup/login
+    // Toggle auth form
     toggleAuth.addEventListener('click', e => {
       e.preventDefault(); clearError();
       isLogin = !isLogin;
@@ -270,14 +263,12 @@
       clearError();
       const email = emailInput.value.trim(), pass = passInput.value.trim();
       if (!email||!pass) return showError('Email and password are required.');
-
       const res = isLogin
         ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
         : await supabaseClient.auth.signUp({ email, password: pass });
       if (res.error) return showError(res.error.message);
 
       const user = res.data.user;
-      // ensure profile row
       const { data: existing } = await supabaseClient
         .from('profiles').select('*').eq('id',user.id).single();
       let need = false;
@@ -314,7 +305,6 @@
       modal.classList.add('hidden');
       navHomeBtn.classList.remove('disabled');
       navAccountBtn.classList.remove('disabled');
-      // go to Account
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
       viewAccount.classList.remove('hidden');
@@ -327,14 +317,14 @@
     }
 
     navHomeBtn.addEventListener('click', () => {
-      if (navHomeBtn.classList.contains('disabled')) return;
+      if(navHomeBtn.classList.contains('disabled'))return;
       setActive(navHomeBtn);
-      viewAccount.classList.add('hidden');
       viewTourney.classList.add('hidden');
+      viewAccount.classList.add('hidden');
       viewHome.classList.remove('hidden');
     });
     navAccountBtn.addEventListener('click', () => {
-      if (navAccountBtn.classList.contains('disabled')) return;
+      if(navAccountBtn.classList.contains('disabled'))return;
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
       viewTourney.classList.add('hidden');
@@ -344,8 +334,8 @@
     // Load profile
     async function loadProfile() {
       const { data: ud } = await supabaseClient.auth.getUser();
-      const { data, error } = await supabaseClient
-        .from('profiles').select('*').eq('id',ud.user.id).single();
+      const { data, error } = await supabaseClient.from('profiles')
+        .select('*').eq('id',ud.user.id).single();
       if (error) return showError(error.message);
       avatarImg.src        = data.avatar_url||avatarImg.src;
       dispUser.textContent = data.username;
@@ -355,7 +345,7 @@
       genderIn.value       = data.gender||'';
     }
 
-    updateBtn.addEventListener('click', async () => {
+    document.getElementById('update-profile').addEventListener('click', async ()=>{
       successMsg.classList.add('hidden');
       const { data: ud } = await supabaseClient.auth.getUser();
       const ups = {
@@ -365,44 +355,44 @@
       };
       const { error } = await supabaseClient.from('profiles')
         .update(ups).eq('id',ud.user.id);
-      if (error) return showError(error.message);
+      if(error) return showError(error.message);
       successMsg.textContent='Profile updated!';
       successMsg.classList.remove('hidden');
       loadProfile();
     });
 
-    logoutBtn.addEventListener('click', async () => {
+    logoutBtn.addEventListener('click', async ()=>{
       await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
     });
 
-    window.addEventListener('load', async () => {
+    window.addEventListener('load', async ()=>{
       const { data } = await supabaseClient.auth.getSession();
-      if (data.session) {
+      if(data.session){
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
-        const user = data.session.user;
+        const { user } = data.session;
         const { data: ex } = await supabaseClient.from('profiles')
           .select('*').eq('id',user.id).single();
         const need = !ex||!ex.first_name||!ex.last_name||!ex.gender;
         await loadProfile();
-        if (need) showModal();
+        if(need) showModal();
       }
     });
 
-    // Tournament listing
-    gameList.addEventListener('click', async e => {
+    // Tournament  list
+    gameList.addEventListener('click', async e=>{
       const card = e.target.closest('.game-card');
-      if (!card) return;
+      if(!card)return;
       await showTournaments(card.dataset.game);
     });
-    backBtn.addEventListener('click', () => {
+    backBtn.addEventListener('click', ()=>{
       viewTourney.classList.add('hidden');
       viewHome.classList.remove('hidden');
     });
 
-    async function showTournaments(game) {
+    async function showTournaments(game){
       viewHome.classList.add('hidden');
       viewAccount.classList.add('hidden');
       viewTourney.classList.remove('hidden');
@@ -410,108 +400,101 @@
       const tt = game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
       const pt = game==='freefire'? 'freefire_participants':'bgmi_participants';
 
-      tourneyCont.innerHTML = 'Loading…';
-      const { data: tours } = await supabaseClient.from(tt).select('*').order('date',{ ascending:true });
+      tourneyCont.innerHTML='Loading…';
+      const { data: tours } = await supabaseClient.from(tt).select('*').order('date',{ascending:true});
 
-      // current user
       const { data: ud } = await supabaseClient.auth.getUser();
       const userId = ud.user.id;
 
-      tourneyCont.innerHTML = '';
-      for (let t of tours) {
-        // participants
+      tourneyCont.innerHTML='';
+      for(let t of tours){
         const { data: parts } = await supabaseClient.from(pt)
           .select('*').eq('tournament_id',t.id);
-        const joined = parts.some(p => p.user_id === userId);
+        const joined = parts.some(p=>p.user_id===userId);
 
-        const div = document.createElement('div');
-        div.className = 'tourney-item';
-        div.innerHTML = `
+        const div=document.createElement('div');
+        div.className='tourney-item';
+        div.innerHTML=`
           <div class="tourney-row"><span>${t.date}</span><span>${t.time}</span><span>${t.map}</span></div>
           <div class="tourney-row"><span>Per Kill: ${t.per_kill}</span><span>Fee: ${t.join_fee}</span></div>
-          <div class="slot-bar-bg">
-            <div class="slot-bar-fill" style="width:${(parts.length/t.max_slots)*100}%"></div>
-          </div>
+          <div class="slot-bar-bg"><div class="slot-bar-fill" style="width:${(parts.length/t.max_slots)*100}%"></div></div>
           <div class="slot-text">${parts.length}/${t.max_slots}</div>
         `;
-        // Join button
-        const btn = document.createElement('button');
-        btn.textContent = joined ? 'Joined' : 'Join';
-        btn.disabled   = joined;
-        btn.style.marginTop = '0';
-        btn.addEventListener('click', e => {
+        // join btn
+        const btn=document.createElement('button');
+        btn.textContent= joined?'Joined':'Join';
+        btn.disabled = joined;
+        btn.style.marginTop='0';
+        btn.addEventListener('click',e=>{
           e.stopPropagation();
-          joinTournament(game, t.id, t.join_fee, t.max_slots);
+          joinTournament(game,t.id,t.join_fee,t.max_slots);
         });
         div.appendChild(btn);
 
-        // Detail click
-        div.addEventListener('click', () => showDetail(game, t.id));
+        // click for detail
+        div.addEventListener('click',()=>showDetail(game,t.id,joined));
 
         tourneyCont.appendChild(div);
       }
     }
 
-    async function joinTournament(game, tid, fee, maxSlots) {
+    async function joinTournament(game,tid,fee){
       const ign = prompt('Enter your In-Game Name:');
-      if (!ign) return;
-
-      const pt = game==='freefire'? 'freefire_participants':'bgmi_participants';
-      // coins
-      const { data: prArr } = await supabaseClient.from('profiles')
+      if(!ign)return;
+      const pt=game==='freefire'?'freefire_participants':'bgmi_participants';
+      const { data: prArr }=await supabaseClient.from('profiles')
         .select('coins').eq('id',(await supabaseClient.auth.getUser()).data.user.id);
-      const coins = prArr[0].coins;
-      if (coins < fee) return alert('Not enough coins!');
-
-      // deduct & insert
+      const coins=prArr[0].coins;
+      if(coins<fee)return alert('Not enough coins!');
       await supabaseClient.from('profiles')
-        .update({ coins: coins - fee })
-        .eq('id',(await supabaseClient.auth.getUser()).data.user.id);
+        .update({coins:coins-fee}).eq('id',(await supabaseClient.auth.getUser()).data.user.id);
       await supabaseClient.from(pt)
-        .insert({ tournament_id:tid, user_id:(await supabaseClient.auth.getUser()).data.user.id, ingame_name:ign });
-
+        .insert({tournament_id:tid,user_id:(await supabaseClient.auth.getUser()).data.user.id,ingame_name:ign});
       alert('Joined!');
       await showTournaments(game);
     }
 
-    // Detail modal
-    async function showDetail(game, tid) {
-      const tt = game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
-      const pt = game==='freefire'? 'freefire_participants':'bgmi_participants';
+    // Detail
+    async function showDetail(game,tid,joined){
+      const tt= game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
+      const pt= game==='freefire'? 'freefire_participants':'bgmi_participants';
+      const { data: tourArr }= await supabaseClient.from(tt).select('*').eq('id',tid);
+      const t=tourArr[0];
+      detailTitle.textContent=`${game.toUpperCase()} Tournament #${t.id}`;
+      detailDate.textContent=t.date;
+      detailTime.textContent=t.time;
+      detailMap.textContent=t.map;
+      detailPKill.textContent=t.per_kill;
+      detailFee.textContent=t.join_fee;
 
-      // fetch tourney
-      const { data: tourArr } = await supabaseClient.from(tt)
-        .select('*').eq('id',tid);
-      const t = tourArr[0];
-
-      detailTitle.textContent = `${game.toUpperCase()} Tournament #${t.id}`;
-      detailDate.textContent  = t.date;
-      detailTime.textContent  = t.time;
-      detailMap.textContent   = t.map;
-      detailPKill.textContent = t.per_kill;
-      detailFee.textContent   = t.join_fee;
-
-      // fetch description file
-      try {
-        const resp = await fetch('describe.txt');
-        detailDesc.textContent = await resp.text();
-      } catch {
-        detailDesc.textContent = 'No description available.';
+      // credentials
+      if(joined){
+        credBox.classList.remove('hidden');
+        detailCusId.textContent   = t.cus_id;
+        detailCusPass.textContent = t.cus_pass;
+      } else {
+        credBox.classList.add('hidden');
       }
 
-      // participants list
-      const { data: parts } = await supabaseClient.from(pt)
-        .select('ingame_name').eq('tournament_id',tid);
-      detailMembers.innerHTML = parts.length
-        ? parts.map(p => `<li>${p.ingame_name}</li>`).join('')
-        : '<li>No participants yet.</li>';
+      // description
+      try {
+        const resp=await fetch('describe.txt');
+        detailDesc.textContent=await resp.text();
+      } catch {
+        detailDesc.textContent='No description available.';
+      }
+
+      // members
+      const { data: parts }=await supabaseClient.from(pt).select('ingame_name').eq('tournament_id',tid);
+      detailMembers.innerHTML=
+        parts.length
+          ? parts.map(p=>`<li>${p.ingame_name}</li>`).join('')
+          : '<li>No participants yet.</li>';
 
       detailModal.classList.remove('hidden');
     }
 
-    closeDetail.addEventListener('click', () => {
-      detailModal.classList.add('hidden');
-    });
+    closeDetail.addEventListener('click',()=>detailModal.classList.add('hidden'));
   </script>
 </body>
 </html>
