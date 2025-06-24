@@ -163,6 +163,7 @@
       justify-content: center;
       z-index: 999;
     }
+    #complete-profile-modal.hidden { display: none; }
     #complete-profile-modal .modal-content {
       background: #1a1a1a;
       border: 2px solid #d4af37;
@@ -187,9 +188,6 @@
       color: #ccc;
     }
   </style>
-
-  <!-- Supabase Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -200,7 +198,7 @@
     <div id="error-msg" class="error hidden"></div>
     <input type="email"    id="email"    placeholder="Enter your email" />
     <input type="password" id="password" placeholder="Choose a strong password" />
-    <button id="auth-button">Create Account</button>
+    <button id="auth-button" type="button">Create Account</button>
     <p style="text-align:center; color:#777;">
       <a href="#" id="toggle-auth">Already have an account? Log in</a>
     </p>
@@ -221,7 +219,7 @@
         <option>Male</option>
         <option>Female</option>
       </select>
-      <button id="modal-save-profile">Save Profile</button>
+      <button id="modal-save-profile" type="button">Save Profile</button>
     </div>
   </div>
 
@@ -249,24 +247,24 @@
         <option>Male</option>
         <option>Female</option>
       </select>
-      <button id="update-profile">Update Profile</button>
-      <button id="logout" style="background:#d32f2f; margin-top:0.5rem;">Log Out</button>
+      <button id="update-profile" type="button">Update Profile</button>
+      <button id="logout" style="background:#d32f2f; margin-top:0.5rem;" type="button">Log Out</button>
     </div>
 
     <!-- Footer Navigation -->
     <div class="footer">
-      <button id="nav-home">Home</button>
-      <button id="nav-account">Account</button>
+      <button id="nav-home" class="active" type="button">Home</button>
+      <button id="nav-account" type="button">Account</button>
     </div>
   </div>
 
+  <!-- Supabase Client & Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ——— CONFIGURE SUPABASE ———
     const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ——— AVATAR POOL ———
     const AVATARS = [
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_154647_182.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
@@ -274,7 +272,7 @@
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155833_404.jpg"
     ];
 
-    // ——— ELEMENTS ———
+    // Elements
     const authContainer       = document.getElementById('auth-container');
     const authTitle           = document.getElementById('auth-title');
     const emailInput          = document.getElementById('email');
@@ -315,7 +313,7 @@
       errorMsg.classList.add('hidden');
     }
 
-    // Toggle between Sign-Up and Log-In
+    // Toggle Auth
     toggleAuth.addEventListener('click', e => {
       e.preventDefault();
       clearError();
@@ -327,72 +325,61 @@
         : 'Already have an account? Log in';
     });
 
-    // Handle Sign-Up / Log-In button
+    // Auth Button
     authButton.addEventListener('click', async () => {
       clearError();
       const email = emailInput.value.trim();
       const pass  = passInput.value.trim();
       if (!email || !pass) return showError('Email and password are required.');
 
-      let res;
-      if (isLogin) {
-        res = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-      } else {
-        res = await supabaseClient.auth.signUp({ email, password: pass });
-      }
+      let res = isLogin
+        ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
+        : await supabaseClient.auth.signUp({ email, password: pass });
+
       if (res.error) return showError(res.error.message);
 
       const user = res.data.user;
-      // Check profile row
       const { data: existing } = await supabaseClient
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
 
-      // Seed if needed and detect incomplete
       let needCompletion = false;
-      let avatarUrl = '';
       if (!existing) {
-        // first signup
-        avatarUrl = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+        // New user
+        const avatarUrl = AVATARS[Math.floor(Math.random() * AVATARS.length)];
         await supabaseClient
           .from('profiles')
           .insert({ id: user.id, username: email, avatar_url: avatarUrl });
         needCompletion = true;
-      } else {
-        // existing row: check missing fields
-        if (!existing.first_name || !existing.last_name || !existing.gender) {
-          needCompletion = true;
-          avatarUrl = existing.avatar_url;
-        }
+      } else if (!existing.first_name || !existing.last_name || !existing.gender) {
+        needCompletion = true;
       }
 
-      // Show the app
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
-      loadProfile().then(() => {
-        if (needCompletion) showCompleteModal();
-      });
+      await loadProfile();
+      if (needCompletion) showCompleteModal();
     });
 
-    // Show and lock modal
+    // Show Modal
     function showCompleteModal() {
       modalFirstName.value = '';
       modalLastName.value = '';
       modalGender.value = '';
       modal.classList.remove('hidden');
-      // disable nav until done
       navHomeBtn.classList.add('disabled');
       navAccountBtn.classList.add('disabled');
     }
 
-    // Save from modal
+    // Modal Save
     modalSaveBtn.addEventListener('click', async () => {
+      console.log('Modal Save clicked');
       const first = modalFirstName.value.trim();
       const last  = modalLastName.value.trim();
       const gen   = modalGender.value;
-      if (!first || !last || !gen) return; // require all
+      if (!first || !last || !gen) return; 
 
       const { data: userData } = await supabaseClient.auth.getUser();
       await supabaseClient
@@ -403,14 +390,20 @@
       modal.classList.add('hidden');
       navHomeBtn.classList.remove('disabled');
       navAccountBtn.classList.remove('disabled');
+      // Automatically switch to Account view
+      setActive(navAccountBtn);
+      viewHome.classList.add('hidden');
+      viewAccount.classList.remove('hidden');
       loadProfile();
     });
 
-    // Navigation
+    // Navigation Helper
     function setActive(button) {
       [navHomeBtn, navAccountBtn].forEach(b => b.classList.remove('active'));
       button.classList.add('active');
     }
+
+    // Nav Clicks
     navHomeBtn.addEventListener('click', () => {
       if (navHomeBtn.classList.contains('disabled')) return;
       setActive(navHomeBtn);
@@ -424,7 +417,7 @@
       viewAccount.classList.remove('hidden');
     });
 
-    // Load profile data
+    // Load Profile
     async function loadProfile() {
       const { data: userData } = await supabaseClient.auth.getUser();
       const { data, error } = await supabaseClient
@@ -442,7 +435,7 @@
       genderIn.value        = data.gender     || '';
     }
 
-    // Update profile in Account view
+    // Update Profile in Account view
     updateBtn.addEventListener('click', async () => {
       successMsg.classList.add('hidden');
       const { data: userData } = await supabaseClient.auth.getUser();
@@ -462,14 +455,14 @@
       loadProfile();
     });
 
-    // Log out
+    // Logout
     logoutBtn.addEventListener('click', async () => {
       await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
     });
 
-    // On page load, restore session if any
+    // On Page Load
     window.addEventListener('load', async () => {
       const { data } = await supabaseClient.auth.getSession();
       if (data.session) {
@@ -481,13 +474,9 @@
           .select('*')
           .eq('id', user.id)
           .single();
-        let needCompletion = false;
-        if (!existing || !existing.first_name || !existing.last_name || !existing.gender) {
-          needCompletion = true;
-        }
-        loadProfile().then(() => {
-          if (needCompletion) showCompleteModal();
-        });
+        let needCompletion = !existing || !existing.first_name || !existing.last_name || !existing.gender;
+        await loadProfile();
+        if (needCompletion) showCompleteModal();
       }
     });
   </script>
