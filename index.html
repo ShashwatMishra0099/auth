@@ -6,187 +6,59 @@
   <title>Pro Tournament Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Work+Sans:wght@300;500&display=swap" rel="stylesheet"/>
   <style>
-    /* ===== Global ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Work Sans', sans-serif;
-      background: #0a0a0a;
-      color: #e0dede;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
+    body { font-family: 'Work Sans', sans-serif; background: #0a0a0a; color: #e0dede; min-height: 100vh; display: flex; flex-direction: column; }
     a { color: #d4af37; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* ===== Containers ===== */
-    .container {
-      width: 90%;
-      max-width: 420px;
-      margin: 4rem auto;
-      background: #1a1a1a;
-      border: 2px solid #d4af37;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(212,175,55,0.5);
-      padding: 2rem;
-    }
+    .container { width: 90%; max-width: 420px; margin: 4rem auto; background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; box-shadow: 0 0 15px rgba(212,175,55,0.5); padding: 2rem; }
     .hidden { display: none; }
 
-    /* ===== Headings ===== */
-    h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      text-align: center;
-      color: #d4af37;
-      margin-bottom: 1.5rem;
-      letter-spacing: 1px;
-    }
-    p.subtitle {
-      text-align: center;
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
-      color: #aaa;
-    }
+    h2 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; text-align: center; color: #d4af37; margin-bottom: 1rem; letter-spacing: 1px; }
+    p.subtitle { text-align: center; font-size: 0.9rem; margin-bottom: 1.5rem; color: #aaa; }
 
-    /* ===== Inputs & Buttons ===== */
-    input, select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-      background: #0f0f0f;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: #e0dede;
-      font-size: 1rem;
-    }
+    input, select { width: 100%; padding: 0.75rem 1rem; margin-bottom: 1rem; background: #0f0f0f; border: 1px solid #333; border-radius: 8px; color: #e0dede; font-size: 1rem; }
     input:focus, select:focus { outline: 2px solid #d4af37; }
 
-    button {
-      width: 100%;
-      padding: 0.85rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, #d4af37, #b5912b);
-      border: none;
-      border-radius: 8px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
-      letter-spacing: 1px;
-      color: #0a0a0a;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(212,175,55,0.4);
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    button { width: 100%; padding: 0.85rem; margin-bottom: 1rem; background: linear-gradient(135deg, #d4af37, #b5912b); border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 1rem; letter-spacing: 1px; color: #0a0a0a; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,175,55,0.4); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ===== Error & Success ===== */
-    .error, .success {
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      text-align: center;
-      border-radius: 6px;
-      padding: 0.5rem;
-    }
-    .error {
-      background: #3b0000;
-      color: #ffa3a3;
-    }
-    .success {
-      background: #003b00;
-      color: #a3ffa3;
-    }
+    .error, .success { font-size: 0.85rem; margin-bottom: 1rem; text-align: center; border-radius: 6px; padding: 0.5rem; }
+    .error { background: #3b0000; color: #ffa3a3; }
+    .success { background: #003b00; color: #a3ffa3; }
 
-    /* ===== Profile Header ===== */
-    .profile-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .profile-header img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #d4af37;
-      object-fit: cover;
-      margin-bottom: 0.5rem;
-    }
-    .profile-header h3 {
-      font-family: 'Orbitron', sans-serif;
-      color: #d4af37;
-      margin-bottom: 0.25rem;
-      letter-spacing: 0.5px;
-    }
-    .profile-header p {
-      font-size: 0.9rem;
-      color: #ccc;
-    }
+    .profile-header { text-align: center; margin-bottom: 1.5rem; }
+    .profile-header img { width:100px; height:100px; border-radius:50%; border:3px solid #d4af37; object-fit:cover; margin-bottom:0.5rem; }
+    .profile-header h3 { font-family:'Orbitron'; color:#d4af37; margin-bottom:0.25rem; letter-spacing:0.5px; }
+    .profile-header p  { font-size:0.9rem; color:#ccc; }
 
-    /* ===== Footer Nav ===== */
-    .footer {
-      margin-top: auto;
-      display: flex;
-      background: #121212;
-      border-top: 2px solid #333;
-    }
-    .footer button {
-      flex: 1;
-      border-radius: 0;
-      background: none;
-      color: #e0dede;
-      border: none;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 0.5px;
-      padding: 1rem;
-      transition: background 0.2s;
-    }
-    .footer button:hover:not(.disabled), .footer .active {
-      background: #1f1f1f;
-      color: #d4af37;
-    }
-    .footer .disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .footer { margin-top:auto; display:flex; background:#121212; border-top:2px solid #333; }
+    .footer button { flex:1; background:none; color:#e0dede; border:none; font-family:'Orbitron'; letter-spacing:0.5px; padding:1rem; transition:background 0.2s; }
+    .footer button:hover:not(.disabled), .footer .active { background:#1f1f1f; color:#d4af37; }
+    .footer .disabled { opacity:0.5; cursor:not-allowed; }
 
-    /* ===== Modal ===== */
-    #complete-profile-modal {
-      position: fixed;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-    }
-    #complete-profile-modal.hidden { display: none; }
-    #complete-profile-modal .modal-content {
-      background: #1a1a1a;
-      border: 2px solid #d4af37;
-      border-radius: 12px;
-      padding: 2rem;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    #complete-profile-modal h3 {
-      font-family: 'Orbitron', sans-serif;
-      color: #d4af37;
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    }
+    #complete-profile-modal { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:999; }
+    #complete-profile-modal.hidden { display:none; }
+    #complete-profile-modal .modal-content { background:#1a1a1a; border:2px solid #d4af37; border-radius:12px; padding:2rem; width:90%;max-width:400px; text-align:center; }
+    #complete-profile-modal h3 { font-family:'Orbitron'; color:#d4af37; margin-bottom:1rem; font-size:1.5rem; }
+    label { font-size:0.9rem; margin-bottom:0.25rem; display:block; color:#ccc; }
 
-    /* ===== Misc ===== */
-    label {
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-      display: block;
-      color: #ccc;
-    }
+    /* Game cards */
+    .game-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
+    .game-card { cursor:pointer; border:2px solid #333; border-radius:8px; overflow:hidden; transition:border-color .2s; }
+    .game-card:hover { border-color:#d4af37; }
+    .game-card img { width:100%; display:block; }
+    .game-card h3 { text-align:center; margin:0.5rem 0; color:#d4af37; font-family:'Orbitron'; }
+
+    /* Tournament items */
+    .tourney-item { background:#1a1a1a; border:1px solid #d4af37; padding:1rem; border-radius:8px; }
+    .tourney-row { display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; }
+    .slot-bar-bg { position:relative; height:10px; background:#333; border-radius:5px; margin-bottom:.5rem; }
+    .slot-bar-fill { height:100%; background:#d4af37; border-radius:5px; width:0%; }
+    .slot-text { position:absolute; top:-18px; right:0; color:#ccc; font-size:.8rem; }
+    #back-to-games { background:none; color:#d4af37; border:none; font-family:'Orbitron'; margin-bottom:1rem; padding:0; cursor:pointer; }
+    #back-to-games:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
@@ -196,40 +68,52 @@
     <h2 id="auth-title">Sign Up</h2>
     <p class="subtitle">Access the Pro Tournament Dashboard</p>
     <div id="error-msg" class="error hidden"></div>
-    <input type="email"    id="email"    placeholder="Enter your email" />
-    <input type="password" id="password" placeholder="Choose a strong password" />
+    <input type="email"    id="email"    placeholder="Your email" />
+    <input type="password" id="password" placeholder="Your password" />
     <button id="auth-button" type="button">Create Account</button>
-    <p style="text-align:center; color:#777;">
+    <p style="text-align:center;color:#777;">
       <a href="#" id="toggle-auth">Already have an account? Log in</a>
     </p>
   </div>
 
-  <!-- COMPLETE PROFILE MODAL -->
+  <!-- PROFILE COMPLETION MODAL -->
   <div id="complete-profile-modal" class="hidden">
     <div class="modal-content">
       <h3>Complete Your Profile</h3>
-      <p class="subtitle">Please fill in these details to continue</p>
-      <label for="modal-first-name">First Name</label>
-      <input type="text" id="modal-first-name" placeholder="First Name" />
-      <label for="modal-last-name">Last Name</label>
-      <input type="text" id="modal-last-name" placeholder="Last Name" />
-      <label for="modal-gender">Gender</label>
+      <p class="subtitle">Fill these details to continue</p>
+      <label>First Name</label><input type="text" id="modal-first-name" placeholder="First Name" />
+      <label>Last Name</label><input type="text" id="modal-last-name" placeholder="Last Name" />
+      <label>Gender</label>
       <select id="modal-gender">
-        <option value="">Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
+        <option value="">Select Gender</option><option>Male</option><option>Female</option>
       </select>
       <button id="modal-save-profile" type="button">Save Profile</button>
     </div>
   </div>
 
-  <!-- APP UI -->
+  <!-- MAIN APP -->
   <div id="app" class="hidden">
+    <!-- Home / Game selection -->
     <div id="view-home" class="container">
-      <h2>Welcome, Gamer!</h2>
-      <p class="subtitle">Your pro dashboard awaits. Check your stats & profile.</p>
+      <h2>Choose Your Game</h2>
+      <div class="game-grid" id="game-list">
+        <div class="game-card" data-game="freefire">
+          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg" />
+          <h3>Free Fire</h3>
+        </div>
+        <div class="game-card" data-game="bgmi">
+          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download%20(1).jpeg" />
+          <h3>BGMI</h3>
+        </div>
+      </div>
+      <!-- Tournament view -->
+      <div id="tournament-view" class="hidden" style="margin-top:2rem;">
+        <button id="back-to-games">← Back to Games</button>
+        <div id="tournaments-container"></div>
+      </div>
     </div>
 
+    <!-- Account -->
     <div id="view-account" class="container hidden">
       <div class="profile-header">
         <img id="avatar-img" src="https://via.placeholder.com/100" alt="Avatar"/>
@@ -237,34 +121,31 @@
         <p>Coins: <span id="display-coins">0</span></p>
       </div>
       <div id="success-msg" class="success hidden"></div>
-      <label for="first_name">First Name</label>
-      <input type="text" id="first_name" placeholder="Your first name"/>
-      <label for="last_name">Last Name</label>
-      <input type="text" id="last_name" placeholder="Your last name"/>
-      <label for="gender">Gender</label>
+      <label>First Name</label><input type="text" id="first_name" placeholder="Your first name"/>
+      <label>Last Name</label><input type="text" id="last_name" placeholder="Your last name"/>
+      <label>Gender</label>
       <select id="gender">
-        <option value="">Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
+        <option value="">Select Gender</option><option>Male</option><option>Female</option>
       </select>
       <button id="update-profile" type="button">Update Profile</button>
-      <button id="logout" style="background:#d32f2f; margin-top:0.5rem;" type="button">Log Out</button>
+      <button id="logout" style="background:#d32f2f;margin-top:.5rem;" type="button">Log Out</button>
     </div>
 
-    <!-- Footer Navigation -->
+    <!-- Footer -->
     <div class="footer">
       <button id="nav-home" class="active" type="button">Home</button>
       <button id="nav-account" type="button">Account</button>
     </div>
   </div>
 
-  <!-- Supabase Client & Logic -->
+  <!-- Supabase & Logic -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Avatar pool
     const AVATARS = [
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_154647_182.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
@@ -273,35 +154,40 @@
     ];
 
     // Elements
-    const authContainer       = document.getElementById('auth-container');
-    const authTitle           = document.getElementById('auth-title');
-    const emailInput          = document.getElementById('email');
-    const passInput           = document.getElementById('password');
-    const authButton          = document.getElementById('auth-button');
-    const toggleAuth          = document.getElementById('toggle-auth');
-    const errorMsg            = document.getElementById('error-msg');
+    const authContainer = document.getElementById('auth-container');
+    const authTitle     = document.getElementById('auth-title');
+    const emailInput    = document.getElementById('email');
+    const passInput     = document.getElementById('password');
+    const authButton    = document.getElementById('auth-button');
+    const toggleAuth    = document.getElementById('toggle-auth');
+    const errorMsg      = document.getElementById('error-msg');
 
-    const modal               = document.getElementById('complete-profile-modal');
-    const modalFirstName      = document.getElementById('modal-first-name');
-    const modalLastName       = document.getElementById('modal-last-name');
-    const modalGender         = document.getElementById('modal-gender');
-    const modalSaveBtn        = document.getElementById('modal-save-profile');
+    const modal         = document.getElementById('complete-profile-modal');
+    const mfName        = document.getElementById('modal-first-name');
+    const mlName        = document.getElementById('modal-last-name');
+    const mGender       = document.getElementById('modal-gender');
+    const mSave         = document.getElementById('modal-save-profile');
 
-    const app                 = document.getElementById('app');
-    const viewHome            = document.getElementById('view-home');
-    const viewAccount         = document.getElementById('view-account');
-    const navHomeBtn          = document.getElementById('nav-home');
-    const navAccountBtn       = document.getElementById('nav-account');
-    const logoutBtn           = document.getElementById('logout');
-    const updateBtn           = document.getElementById('update-profile');
-    const successMsg          = document.getElementById('success-msg');
+    const app           = document.getElementById('app');
+    const viewHome      = document.getElementById('view-home');
+    const tourneyView   = document.getElementById('tournament-view');
+    const gameList      = document.getElementById('game-list');
+    const backBtn       = document.getElementById('back-to-games');
+    const tourneyCont   = document.getElementById('tournaments-container');
 
-    const avatarImg           = document.getElementById('avatar-img');
-    const dispUser            = document.getElementById('display-username');
-    const dispCoins           = document.getElementById('display-coins');
-    const firstNameIn         = document.getElementById('first_name');
-    const lastNameIn          = document.getElementById('last_name');
-    const genderIn            = document.getElementById('gender');
+    const viewAccount   = document.getElementById('view-account');
+    const navHomeBtn    = document.getElementById('nav-home');
+    const navAccountBtn = document.getElementById('nav-account');
+    const logoutBtn     = document.getElementById('logout');
+    const updateBtn     = document.getElementById('update-profile');
+    const successMsg    = document.getElementById('success-msg');
+
+    const avatarImg     = document.getElementById('avatar-img');
+    const dispUser      = document.getElementById('display-username');
+    const dispCoins     = document.getElementById('display-coins');
+    const firstNameIn   = document.getElementById('first_name');
+    const lastNameIn    = document.getElementById('last_name');
+    const genderIn      = document.getElementById('gender');
 
     let isLogin = false;
 
@@ -313,10 +199,9 @@
       errorMsg.classList.add('hidden');
     }
 
-    // Toggle Auth
+    // Toggle Sign-Up / Log-In
     toggleAuth.addEventListener('click', e => {
-      e.preventDefault();
-      clearError();
+      e.preventDefault(); clearError();
       isLogin = !isLogin;
       authTitle.textContent  = isLogin ? 'Log In' : 'Sign Up';
       authButton.textContent = isLogin ? 'Log In' : 'Create Account';
@@ -325,159 +210,175 @@
         : 'Already have an account? Log in';
     });
 
-    // Auth Button
+    // Auth handler
     authButton.addEventListener('click', async () => {
       clearError();
-      const email = emailInput.value.trim();
-      const pass  = passInput.value.trim();
+      const email = emailInput.value.trim(), pass = passInput.value.trim();
       if (!email || !pass) return showError('Email and password are required.');
 
-      let res = isLogin
+      const res = isLogin
         ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
         : await supabaseClient.auth.signUp({ email, password: pass });
-
       if (res.error) return showError(res.error.message);
 
       const user = res.data.user;
+      // check/seed profile
       const { data: existing } = await supabaseClient
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      let needCompletion = false;
+        .from('profiles').select('*').eq('id', user.id).single();
+      let needComple = false;
       if (!existing) {
-        // New user
-        const avatarUrl = AVATARS[Math.floor(Math.random() * AVATARS.length)];
-        await supabaseClient
-          .from('profiles')
-          .insert({ id: user.id, username: email, avatar_url: avatarUrl });
-        needCompletion = true;
-      } else if (!existing.first_name || !existing.last_name || !existing.gender) {
-        needCompletion = true;
+        const rnd = AVATARS[Math.floor(Math.random()*AVATARS.length)];
+        await supabaseClient.from('profiles').insert({ id:user.id, username:email, avatar_url:rnd });
+        needComple = true;
+      } else if (!existing.first_name||!existing.last_name||!existing.gender) {
+        needComple = true;
       }
 
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
       await loadProfile();
-      if (needCompletion) showCompleteModal();
+      if (needComple) showCompleteModal();
     });
 
-    // Show Modal
+    // Show modal
     function showCompleteModal() {
-      modalFirstName.value = '';
-      modalLastName.value = '';
-      modalGender.value = '';
+      mfName.value=''; mlName.value=''; mGender.value='';
       modal.classList.remove('hidden');
       navHomeBtn.classList.add('disabled');
       navAccountBtn.classList.add('disabled');
     }
-
-    // Modal Save
-    modalSaveBtn.addEventListener('click', async () => {
-      console.log('Modal Save clicked');
-      const first = modalFirstName.value.trim();
-      const last  = modalLastName.value.trim();
-      const gen   = modalGender.value;
-      if (!first || !last || !gen) return; 
-
-      const { data: userData } = await supabaseClient.auth.getUser();
-      await supabaseClient
-        .from('profiles')
-        .update({ first_name: first, last_name: last, gender: gen })
-        .eq('id', userData.user.id);
-
+    // Save modal
+    mSave.addEventListener('click', async () => {
+      const f=mfName.value.trim(), l=mlName.value.trim(), g=mGender.value;
+      if(!f||!l||!g) return;
+      const { data:ud } = await supabaseClient.auth.getUser();
+      await supabaseClient.from('profiles').update({ first_name:f,last_name:l,gender:g }).eq('id',ud.user.id);
       modal.classList.add('hidden');
       navHomeBtn.classList.remove('disabled');
       navAccountBtn.classList.remove('disabled');
-      // Automatically switch to Account view
+      // switch to Account
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
       viewAccount.classList.remove('hidden');
       loadProfile();
     });
 
-    // Navigation Helper
-    function setActive(button) {
-      [navHomeBtn, navAccountBtn].forEach(b => b.classList.remove('active'));
-      button.classList.add('active');
+    // Navigation helper
+    function setActive(btn) {
+      [navHomeBtn,navAccountBtn].forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
     }
-
-    // Nav Clicks
-    navHomeBtn.addEventListener('click', () => {
-      if (navHomeBtn.classList.contains('disabled')) return;
+    navHomeBtn.addEventListener('click',()=> {
+      if(navHomeBtn.classList.contains('disabled'))return;
       setActive(navHomeBtn);
       viewHome.classList.remove('hidden');
       viewAccount.classList.add('hidden');
     });
-    navAccountBtn.addEventListener('click', () => {
-      if (navAccountBtn.classList.contains('disabled')) return;
+    navAccountBtn.addEventListener('click',()=> {
+      if(navAccountBtn.classList.contains('disabled'))return;
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
       viewAccount.classList.remove('hidden');
     });
 
-    // Load Profile
-    async function loadProfile() {
-      const { data: userData } = await supabaseClient.auth.getUser();
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('*')
-        .eq('id', userData.user.id)
-        .single();
-      if (error) return showError(error.message);
-
-      avatarImg.src         = data.avatar_url || avatarImg.src;
-      dispUser.textContent  = data.username;
-      dispCoins.textContent = data.coins;
-      firstNameIn.value     = data.first_name || '';
-      lastNameIn.value      = data.last_name  || '';
-      genderIn.value        = data.gender     || '';
+    // Load profile
+    async function loadProfile(){
+      const { data:ud } = await supabaseClient.auth.getUser();
+      const { data, error } = await supabaseClient.from('profiles').select('*').eq('id',ud.user.id).single();
+      if(error) return showError(error.message);
+      avatarImg.src = data.avatar_url||avatarImg.src;
+      dispUser.textContent = data.username;
+      dispCoins.textContent= data.coins;
+      firstNameIn.value=data.first_name||'';
+      lastNameIn.value =data.last_name||'';
+      genderIn.value   =data.gender||'';
     }
 
-    // Update Profile in Account view
-    updateBtn.addEventListener('click', async () => {
+    // Update profile
+    updateBtn.addEventListener('click',async()=>{
       successMsg.classList.add('hidden');
-      const { data: userData } = await supabaseClient.auth.getUser();
-      const updates = {
-        first_name: firstNameIn.value.trim(),
-        last_name:  lastNameIn.value.trim(),
-        gender:     genderIn.value
-      };
-      const { error } = await supabaseClient
-        .from('profiles')
-        .update(updates)
-        .eq('id', userData.user.id);
-      if (error) return showError(error.message);
-
-      successMsg.textContent = 'Profile updated!';
-      successMsg.classList.remove('hidden');
+      const { data:ud } = await supabaseClient.auth.getUser();
+      const ups={ first_name:firstNameIn.value.trim(), last_name:lastNameIn.value.trim(), gender:genderIn.value };
+      const { error } = await supabaseClient.from('profiles').update(ups).eq('id',ud.user.id);
+      if(error) return showError(error.message);
+      successMsg.textContent='Profile updated!'; successMsg.classList.remove('hidden');
       loadProfile();
     });
 
     // Logout
-    logoutBtn.addEventListener('click', async () => {
+    logoutBtn.addEventListener('click',async()=>{
       await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
     });
 
-    // On Page Load
-    window.addEventListener('load', async () => {
+    // On load restore
+    window.addEventListener('load',async()=>{
       const { data } = await supabaseClient.auth.getSession();
-      if (data.session) {
+      if(data.session){
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
         const user = data.session.user;
-        const { data: existing } = await supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        let needCompletion = !existing || !existing.first_name || !existing.last_name || !existing.gender;
+        const { data:ex } = await supabaseClient.from('profiles').select('*').eq('id',user.id).single();
+        let need = !ex||!ex.first_name||!ex.last_name||!ex.gender;
         await loadProfile();
-        if (needCompletion) showCompleteModal();
+        if(need) showCompleteModal();
       }
+    });
+
+    // ----- Tournament logic -----
+    gameList.addEventListener('click',async e=>{
+      const card = e.target.closest('.game-card');
+      if(!card)return;
+      await showTournaments(card.dataset.game);
+    });
+    backBtn.addEventListener('click',()=>{
+      tourneyView.classList.add('hidden');
+      gameList.parentNode.classList.remove('hidden');
+    });
+    async function showTournaments(game){
+      gameList.parentNode.classList.add('hidden');
+      tourneyView.classList.remove('hidden');
+      tourneyCont.innerHTML='Loading…';
+      const tt = game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
+      const pt = game==='freefire'? 'freefire_participants':'bgmi_participants';
+      const { data: tours } = await supabaseClient.from(tt).select('*').order('date',{ascending:true});
+      tourneyCont.innerHTML = tours.map(t=>`
+        <div class="tourney-item">
+          <div class="tourney-row"><span>${t.date}</span><span>${t.time}</span><span>${t.map}</span></div>
+          <div class="tourney-row"><span>Per Kill: ${t.per_kill}</span><span>Fee: ${t.join_fee}</span></div>
+          <div class="slot-bar-bg">
+            <div class="slot-bar-fill" data-tid="${t.id}"></div>
+            <span class="slot-text" data-tid="${t.id}">0/${t.max_slots}</span>
+          </div>
+          <button class="join-btn" data-game="${game}" data-tid="${t.id}">Join</button>
+        </div>`).join('');
+      // load counts
+      await Promise.all(tours.map(async t=>{
+        const { data:ps } = await supabaseClient.from(pt).select('id').eq('tournament_id',t.id);
+        const fill = document.querySelector(`.slot-bar-fill[data-tid="${t.id}"]`);
+        const txt  = document.querySelector(`.slot-text[data-tid="${t.id}"]`);
+        fill.style.width = `${(ps.length/t.max_slots)*100}%`;
+        txt.textContent  = `${ps.length}/${t.max_slots}`;
+      }));
+    }
+    // join handler
+    tourneyCont.addEventListener('click',async e=>{
+      const btn = e.target.closest('.join-btn');
+      if(!btn)return;
+      const game=btn.dataset.game, tid=+btn.dataset.tid;
+      const pt = game==='freefire'? 'freefire_participants':'bgmi_participants';
+      const tt = game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
+      const ign = prompt('Enter your In-Game Name:');
+      if(!ign)return;
+      const [{data:t}] = await supabaseClient.from(tt).select('join_fee').eq('id',tid);
+      const { data:ud } = await supabaseClient.auth.getUser();
+      const [{data:pr}] = await supabaseClient.from('profiles').select('coins').eq('id',ud.user.id);
+      if(pr.coins < t.join_fee) return alert('Not enough coins!');
+      await supabaseClient.from('profiles').update({ coins: pr.coins - t.join_fee }).eq('id',ud.user.id);
+      await supabaseClient.from(pt).insert({ tournament_id:tid, user_id:ud.user.id, ingame_name:ign });
+      alert('Joined successfully!');
+      showTournaments(game);
     });
   </script>
 </body>
