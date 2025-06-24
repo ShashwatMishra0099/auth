@@ -8,8 +8,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Work Sans', sans-serif; background: #0a0a0a; color: #e0dede; min-height: 100vh; display: flex; flex-direction: column; }
-    a { color: #d4af37; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: #d4af37; text-decoration: none; } a:hover { text-decoration: underline; }
 
     .container { width: 90%; max-width: 420px; margin: 4rem auto; background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; box-shadow: 0 0 15px rgba(212,175,55,0.5); padding: 2rem; }
     .hidden { display: none; }
@@ -44,12 +43,14 @@
     #complete-profile-modal h3 { font-family:'Orbitron'; color:#d4af37; margin-bottom:1rem; font-size:1.5rem; }
     label { font-size:0.9rem; margin-bottom:0.25rem; display:block; color:#ccc; }
 
+    /* Game cards */
     .game-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
     .game-card { cursor:pointer; border:2px solid #333; border-radius:8px; overflow:hidden; transition:border-color .2s; }
     .game-card:hover { border-color:#d4af37; }
     .game-card img { width:100%; display:block; }
     .game-card h3 { text-align:center; margin:0.5rem 0; color:#d4af37; font-family:'Orbitron'; }
 
+    /* Tournament items */
     .tourney-item { background:#1a1a1a; border:1px solid #d4af37; padding:1rem; border-radius:8px; }
     .tourney-row { display:flex; justify-content:space-between; margin-bottom:.5rem; font-size:.9rem; }
     .slot-bar-bg { position:relative; height:10px; background:#333; border-radius:5px; margin-bottom:.5rem; }
@@ -91,10 +92,10 @@
 
   <!-- APP -->
   <div id="app" class="hidden">
-    <!-- Home / Games -->
+    <!-- Home -->
     <div id="view-home" class="container">
       <h2>Choose Your Game</h2>
-      <div id="game-list" class="game-grid">
+      <div class="game-grid" id="game-list">
         <div class="game-card" data-game="freefire">
           <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg" />
           <h3>Free Fire</h3>
@@ -104,8 +105,6 @@
           <h3>BGMI</h3>
         </div>
       </div>
-
-      <!-- Tournaments -->
       <div id="tournament-view" class="hidden" style="margin-top:2rem;">
         <button id="back-to-games">← Back to Games</button>
         <div id="tournaments-container"></div>
@@ -137,10 +136,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Supabase
+    // Supabase init
     const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // Avatars
     const AVATARS = [
@@ -187,11 +186,17 @@
           genderIn    = document.getElementById('gender');
 
     let isLogin = false;
-    function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.remove('hidden'); }
-    function clearError(){ errorMsg.classList.add('hidden'); }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.remove('hidden');
+    }
+    function clearError() {
+      errorMsg.classList.add('hidden');
+    }
 
     // Toggle auth
-    toggleAuth.addEventListener('click', e=>{
+    toggleAuth.addEventListener('click', e => {
       e.preventDefault(); clearError();
       isLogin = !isLogin;
       authTitle.textContent  = isLogin ? 'Log In' : 'Sign Up';
@@ -201,50 +206,52 @@
         : 'Already have an account? Log in';
     });
 
-    // Handle auth
-    authButton.addEventListener('click', async()=>{
+    // Auth handler
+    authButton.addEventListener('click', async () => {
       clearError();
       const email = emailInput.value.trim(), pass = passInput.value.trim();
-      if(!email||!pass) return showError('Email and password are required.');
+      if (!email || !pass) return showError('Email and password are required.');
 
       const res = isLogin
-        ? await supabase.auth.signInWithPassword({ email, password: pass })
-        : await supabase.auth.signUp({ email, password: pass });
-      if(res.error) return showError(res.error.message);
+        ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
+        : await supabaseClient.auth.signUp({ email, password: pass });
+      if (res.error) return showError(res.error.message);
 
       const user = res.data.user;
-      const { data: existing } = await supabase
+      // profile check & seed
+      const { data: existing } = await supabaseClient
         .from('profiles').select('*').eq('id', user.id).single();
       let need = false;
-      if(!existing){
-        await supabase.from('profiles').insert({
-          id: user.id, username: email,
+      if (!existing) {
+        await supabaseClient.from('profiles').insert({
+          id: user.id,
+          username: email,
           avatar_url: AVATARS[Math.floor(Math.random()*AVATARS.length)]
         });
         need = true;
-      } else if(!existing.first_name||!existing.last_name||!existing.gender){
+      } else if (!existing.first_name||!existing.last_name||!existing.gender) {
         need = true;
       }
 
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
       await loadProfile();
-      if(need) showModal();
+      if (need) showModal();
     });
 
-    // Complete-profile modal
-    function showModal(){
+    // Show modal
+    function showModal() {
       mfName.value=''; mlName.value=''; mGender.value='';
       modal.classList.remove('hidden');
       navHomeBtn.classList.add('disabled');
       navAccountBtn.classList.add('disabled');
     }
-    mSave.addEventListener('click', async()=>{
+    // Save modal
+    mSave.addEventListener('click', async () => {
       const f=mfName.value.trim(), l=mlName.value.trim(), g=mGender.value;
-      if(!f||!l||!g) return;
-      const { data: ud } = await supabase.auth.getUser();
-      await supabase.from('profiles').update({ first_name:f, last_name:l, gender:g })
-        .eq('id', ud.user.id);
+      if (!f||!l||!g) return;
+      const { data: ud } = await supabaseClient.auth.getUser();
+      await supabaseClient.from('profiles').update({ first_name:f, last_name:l, gender:g }).eq('id', ud.user.id);
       modal.classList.add('hidden');
       navHomeBtn.classList.remove('disabled');
       navAccountBtn.classList.remove('disabled');
@@ -254,15 +261,15 @@
       loadProfile();
     });
 
-    // Navigation helpers
-    function setActive(b){ [navHomeBtn,navAccountBtn].forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
-    navHomeBtn.addEventListener('click', ()=>{
+    // Navigation
+    function setActive(b) { [navHomeBtn,navAccountBtn].forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
+    navHomeBtn.addEventListener('click',()=>{
       if(navHomeBtn.classList.contains('disabled')) return;
       setActive(navHomeBtn);
       viewHome.classList.remove('hidden');
       viewAccount.classList.add('hidden');
     });
-    navAccountBtn.addEventListener('click', ()=>{
+    navAccountBtn.addEventListener('click',()=>{
       if(navAccountBtn.classList.contains('disabled')) return;
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
@@ -270,74 +277,69 @@
     });
 
     // Load profile
-    async function loadProfile(){
-      const { data: ud } = await supabase.auth.getUser();
-      const { data, error } = await supabase.from('profiles').select('*').eq('id',ud.user.id).single();
-      if(error) return showError(error.message);
-      avatarImg.src        = data.avatar_url||avatarImg.src;
+    async function loadProfile() {
+      const { data: ud } = await supabaseClient.auth.getUser();
+      const { data, error } = await supabaseClient.from('profiles').select('*').eq('id',ud.user.id).single();
+      if (error) return showError(error.message);
+      avatarImg.src = data.avatar_url || avatarImg.src;
       dispUser.textContent = data.username;
-      dispCoins.textContent= data.coins;
-      firstNameIn.value    = data.first_name||'';
-      lastNameIn.value     = data.last_name||'';
-      genderIn.value       = data.gender||'';
+      dispCoins.textContent = data.coins;
+      firstNameIn.value = data.first_name||'';
+      lastNameIn.value  = data.last_name||'';
+      genderIn.value    = data.gender||'';
     }
 
     // Update profile
-    updateBtn.addEventListener('click', async()=>{
+    updateBtn.addEventListener('click', async () => {  
       successMsg.classList.add('hidden');
-      const { data: ud } = await supabase.auth.getUser();
-      const ups = {
-        first_name: firstNameIn.value.trim(),
-        last_name:  lastNameIn.value.trim(),
-        gender:     genderIn.value
-      };
-      const { error } = await supabase.from('profiles').update(ups).eq('id', ud.user.id);
-      if(error) return showError(error.message);
-      successMsg.textContent='Profile updated!';
+      const { data: ud } = await supabaseClient.auth.getUser();
+      const ups = { first_name:firstNameIn.value.trim(), last_name:lastNameIn.value.trim(), gender:genderIn.value };
+      const { error } = await supabaseClient.from('profiles').update(ups).eq('id', ud.user.id);
+      if (error) return showError(error.message);
+      successMsg.textContent = 'Profile updated!';
       successMsg.classList.remove('hidden');
       loadProfile();
     });
 
     // Logout
-    logoutBtn.addEventListener('click', async()=>{
-      await supabase.auth.signOut();
+    logoutBtn.addEventListener('click', async ()=>{
+      await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
     });
 
     // Restore session
-    window.addEventListener('load', async()=>{
-      const { data } = await supabase.auth.getSession();
-      if(data.session){
+    window.addEventListener('load', async ()=>{
+      const { data } = await supabaseClient.auth.getSession();
+      if (data.session) {
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
         const user = data.session.user;
-        const { data: ex } = await supabase.from('profiles').select('*').eq('id',user.id).single();
+        const { data: ex } = await supabaseClient.from('profiles').select('*').eq('id',user.id).single();
         const need = !ex||!ex.first_name||!ex.last_name||!ex.gender;
         await loadProfile();
-        if(need) showModal();
+        if (need) showModal();
       }
     });
 
     // Tournament logic
-    gameList.addEventListener('click', async e=>{
+    gameList.addEventListener('click', async e => {
       const card = e.target.closest('.game-card');
-      if(!card) return;
-      viewHome.querySelector('#game-list').classList.add('hidden');
-      tourneyView.classList.remove('hidden');
+      if (!card) return;
       await showTournaments(card.dataset.game);
     });
-    backBtn.addEventListener('click', ()=>{
+    backBtn.addEventListener('click', () => {
       tourneyView.classList.add('hidden');
-      viewHome.querySelector('#game-list').classList.remove('hidden');
+      document.querySelector('.game-grid').classList.remove('hidden');
     });
-
-    async function showTournaments(game){
+    async function showTournaments(game) {
+      document.querySelector('.game-grid').classList.add('hidden');
+      tourneyView.classList.remove('hidden');
       tourneyCont.innerHTML = 'Loading…';
-      const tTable = game==='freefire' ? 'freefire_tournaments' : 'bgmi_tournaments';
-      const pTable = game==='freefire' ? 'freefire_participants': 'bgmi_participants';
-      const { data: tours } = await supabase.from(tTable).select('*').order('date',{ascending:true});
-      tourneyCont.innerHTML = tours.map(t=>`
+      const tbl = game==='freefire' ? 'freefire_tournaments' : 'bgmi_tournaments';
+      const pTbl = game==='freefire' ? 'freefire_participants' : 'bgmi_participants';
+      const { data: tours } = await supabaseClient.from(tbl).select('*').order('date',{ascending:true});
+      tourneyCont.innerHTML = tours.map(t => `
         <div class="tourney-item">
           <div class="tourney-row"><span>${t.date}</span><span>${t.time}</span><span>${t.map}</span></div>
           <div class="tourney-row"><span>Per Kill: ${t.per_kill}</span><span>Fee: ${t.join_fee}</span></div>
@@ -348,48 +350,40 @@
           <button class="join-btn" data-game="${game}" data-tid="${t.id}">Join</button>
         </div>
       `).join('');
-
       await Promise.all(tours.map(async t=>{
-        const { data: parts } = await supabase.from(pTable).select('*').eq('tournament_id',t.id);
-        document.querySelector(`.slot-bar-fill[data-tid="${t.id}"]`)
-                .style.width = `${(parts.length/t.max_slots)*100}%`;
-        document.querySelector(`.slot-text[data-tid="${t.id}"]`)
-                .textContent = `${parts.length}/${t.max_slots}`;
+        const { data: parts } = await supabaseClient.from(pTbl).select('*').eq('tournament_id',t.id);
+        document.querySelector(`.slot-bar-fill[data-tid="${t.id}"]`).style.width = `${(parts.length/t.max_slots)*100}%`;
+        document.querySelector(`.slot-text[data-tid="${t.id}"]`).textContent = `${parts.length}/${t.max_slots}`;
       }));
     }
-
-    tourneyCont.addEventListener('click', async e=>{
+    tourneyCont.addEventListener('click', async e => {
       const btn = e.target.closest('.join-btn');
-      if(!btn) return;
+      if (!btn) return;
       const game = btn.dataset.game, tid = +btn.dataset.tid;
-      const pTable = game==='freefire' ? 'freefire_participants' : 'bgmi_participants';
-      const tTable = game==='freefire' ? 'freefire_tournaments'   : 'bgmi_tournaments';
-
-      // prevent double join
-      const { data: ud } = await supabase.auth.getUser();
-      const { data: existing } = await supabase.from(pTable)
-        .select('*')
-        .eq('user_id', ud.user.id)
-        .eq('tournament_id', tid)
-        .single();
-      if(existing) return alert('You have already joined this tournament.');
+      const pTbl = game==='freefire' ? 'freefire_participants' : 'bgmi_participants';
+      const tTbl = game==='freefire' ? 'freefire_tournaments'   : 'bgmi_tournaments';
 
       const ign = prompt('Enter your In-Game Name:');
-      if(!ign) return;
+      if (!ign) return;
 
-      // get fee & slots
-      const { data: [t] } = await supabase.from(tTable).select('join_fee','max_slots').eq('id',tid);
-      const { data: [pr] } = await supabase.from('profiles').select('coins').eq('id',ud.user.id);
-      if(pr.coins < t.join_fee) return alert('Not enough coins!');
+      // Prevent duplicate join
+      const { data: existing } = await supabaseClient
+        .from(pTbl)
+        .select('*')
+        .eq('tournament_id', tid)
+        .eq('user_id', (await supabaseClient.auth.getUser()).data.user.id)
+        .single();
+      if (existing) return alert('You have already joined this tournament.');
 
-      // deduct coins
-      await supabase.from('profiles')
-        .update({ coins: pr.coins - t.join_fee })
-        .eq('id', ud.user.id);
+      // fetch fee
+      const { data: [tour] } = await supabaseClient.from(tTbl).select('join_fee','max_slots').eq('id',tid);
+      const { data: ud } = await supabaseClient.auth.getUser();
+      const [{ coins }] = await supabaseClient.from('profiles').select('coins').eq('id',ud.user.id);
+      if (coins < tour.join_fee) return alert('Not enough coins!');
 
-      // insert participant
-      await supabase.from(pTable)
-        .insert({ tournament_id:tid, user_id:ud.user.id, ingame_name:ign });
+      // deduct & insert
+      await supabaseClient.from('profiles').update({ coins: coins - tour.join_fee }).eq('id',ud.user.id);
+      await supabaseClient.from(pTbl).insert({ tournament_id:tid, user_id:ud.user.id, ingame_name:ign });
 
       alert('Joined successfully!');
       showTournaments(game);
