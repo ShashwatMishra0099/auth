@@ -15,6 +15,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     a { color: #d4af37; text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -143,9 +144,39 @@
       padding: 1rem;
       transition: background 0.2s;
     }
-    .footer button:hover, .footer .active {
+    .footer button:hover:not(.disabled), .footer .active {
       background: #1f1f1f;
       color: #d4af37;
+    }
+    .footer .disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== Modal ===== */
+    #complete-profile-modal {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    #complete-profile-modal .modal-content {
+      background: #1a1a1a;
+      border: 2px solid #d4af37;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    #complete-profile-modal h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #d4af37;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
     }
 
     /* ===== Misc ===== */
@@ -173,6 +204,25 @@
     <p style="text-align:center; color:#777;">
       <a href="#" id="toggle-auth">Already have an account? Log in</a>
     </p>
+  </div>
+
+  <!-- COMPLETE PROFILE MODAL -->
+  <div id="complete-profile-modal" class="hidden">
+    <div class="modal-content">
+      <h3>Complete Your Profile</h3>
+      <p class="subtitle">Please fill in these details to continue</p>
+      <label for="modal-first-name">First Name</label>
+      <input type="text" id="modal-first-name" placeholder="First Name" />
+      <label for="modal-last-name">Last Name</label>
+      <input type="text" id="modal-last-name" placeholder="Last Name" />
+      <label for="modal-gender">Gender</label>
+      <select id="modal-gender">
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+      <button id="modal-save-profile">Save Profile</button>
+    </div>
   </div>
 
   <!-- APP UI -->
@@ -205,15 +255,15 @@
 
     <!-- Footer Navigation -->
     <div class="footer">
-      <button id="nav-home" class="active">Home</button>
+      <button id="nav-home">Home</button>
       <button id="nav-account">Account</button>
     </div>
   </div>
 
   <script>
     // ——— CONFIGURE SUPABASE ———
-    const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_KEY = 'YOUR_ANON_KEY';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ——— AVATAR POOL ———
@@ -225,29 +275,35 @@
     ];
 
     // ——— ELEMENTS ———
-    const authContainer = document.getElementById('auth-container');
-    const authTitle     = document.getElementById('auth-title');
-    const emailInput    = document.getElementById('email');
-    const passInput     = document.getElementById('password');
-    const authButton    = document.getElementById('auth-button');
-    const toggleAuth    = document.getElementById('toggle-auth');
-    const errorMsg      = document.getElementById('error-msg');
+    const authContainer       = document.getElementById('auth-container');
+    const authTitle           = document.getElementById('auth-title');
+    const emailInput          = document.getElementById('email');
+    const passInput           = document.getElementById('password');
+    const authButton          = document.getElementById('auth-button');
+    const toggleAuth          = document.getElementById('toggle-auth');
+    const errorMsg            = document.getElementById('error-msg');
 
-    const app           = document.getElementById('app');
-    const viewHome      = document.getElementById('view-home');
-    const viewAccount   = document.getElementById('view-account');
-    const navHomeBtn    = document.getElementById('nav-home');
-    const navAccountBtn = document.getElementById('nav-account');
-    const logoutBtn     = document.getElementById('logout');
-    const updateBtn     = document.getElementById('update-profile');
-    const successMsg    = document.getElementById('success-msg');
+    const modal               = document.getElementById('complete-profile-modal');
+    const modalFirstName      = document.getElementById('modal-first-name');
+    const modalLastName       = document.getElementById('modal-last-name');
+    const modalGender         = document.getElementById('modal-gender');
+    const modalSaveBtn        = document.getElementById('modal-save-profile');
 
-    const avatarImg     = document.getElementById('avatar-img');
-    const dispUser      = document.getElementById('display-username');
-    const dispCoins     = document.getElementById('display-coins');
-    const firstNameIn   = document.getElementById('first_name');
-    const lastNameIn    = document.getElementById('last_name');
-    const genderIn      = document.getElementById('gender');
+    const app                 = document.getElementById('app');
+    const viewHome            = document.getElementById('view-home');
+    const viewAccount         = document.getElementById('view-account');
+    const navHomeBtn          = document.getElementById('nav-home');
+    const navAccountBtn       = document.getElementById('nav-account');
+    const logoutBtn           = document.getElementById('logout');
+    const updateBtn           = document.getElementById('update-profile');
+    const successMsg          = document.getElementById('success-msg');
+
+    const avatarImg           = document.getElementById('avatar-img');
+    const dispUser            = document.getElementById('display-username');
+    const dispCoins           = document.getElementById('display-coins');
+    const firstNameIn         = document.getElementById('first_name');
+    const lastNameIn          = document.getElementById('last_name');
+    const genderIn            = document.getElementById('gender');
 
     let isLogin = false;
 
@@ -286,27 +342,67 @@
       }
       if (res.error) return showError(res.error.message);
 
-      // Check if profile exists; if not, seed it with random avatar
       const user = res.data.user;
+      // Check profile row
       const { data: existing } = await supabaseClient
         .from('profiles')
-        .select('id')
+        .select('*')
         .eq('id', user.id)
         .single();
 
+      // Seed if needed and detect incomplete
+      let needCompletion = false;
+      let avatarUrl = '';
       if (!existing) {
-        const randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+        // first signup
+        avatarUrl = AVATARS[Math.floor(Math.random() * AVATARS.length)];
         await supabaseClient
           .from('profiles')
-          .insert({
-            id: user.id,
-            username: email,
-            avatar_url: randomAvatar
-          });
+          .insert({ id: user.id, username: email, avatar_url: avatarUrl });
+        needCompletion = true;
+      } else {
+        // existing row: check missing fields
+        if (!existing.first_name || !existing.last_name || !existing.gender) {
+          needCompletion = true;
+          avatarUrl = existing.avatar_url;
+        }
       }
 
+      // Show the app
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
+      loadProfile().then(() => {
+        if (needCompletion) showCompleteModal();
+      });
+    });
+
+    // Show and lock modal
+    function showCompleteModal() {
+      modalFirstName.value = '';
+      modalLastName.value = '';
+      modalGender.value = '';
+      modal.classList.remove('hidden');
+      // disable nav until done
+      navHomeBtn.classList.add('disabled');
+      navAccountBtn.classList.add('disabled');
+    }
+
+    // Save from modal
+    modalSaveBtn.addEventListener('click', async () => {
+      const first = modalFirstName.value.trim();
+      const last  = modalLastName.value.trim();
+      const gen   = modalGender.value;
+      if (!first || !last || !gen) return; // require all
+
+      const { data: userData } = await supabaseClient.auth.getUser();
+      await supabaseClient
+        .from('profiles')
+        .update({ first_name: first, last_name: last, gender: gen })
+        .eq('id', userData.user.id);
+
+      modal.classList.add('hidden');
+      navHomeBtn.classList.remove('disabled');
+      navAccountBtn.classList.remove('disabled');
       loadProfile();
     });
 
@@ -316,11 +412,13 @@
       button.classList.add('active');
     }
     navHomeBtn.addEventListener('click', () => {
+      if (navHomeBtn.classList.contains('disabled')) return;
       setActive(navHomeBtn);
       viewHome.classList.remove('hidden');
       viewAccount.classList.add('hidden');
     });
     navAccountBtn.addEventListener('click', () => {
+      if (navAccountBtn.classList.contains('disabled')) return;
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
       viewAccount.classList.remove('hidden');
@@ -344,14 +442,14 @@
       genderIn.value        = data.gender     || '';
     }
 
-    // Update profile fields
+    // Update profile in Account view
     updateBtn.addEventListener('click', async () => {
       successMsg.classList.add('hidden');
       const { data: userData } = await supabaseClient.auth.getUser();
       const updates = {
-        first_name: firstNameIn.value,
-        last_name:  lastNameIn.value,
-        gender:     genderIn.value,
+        first_name: firstNameIn.value.trim(),
+        last_name:  lastNameIn.value.trim(),
+        gender:     genderIn.value
       };
       const { error } = await supabaseClient
         .from('profiles')
@@ -377,7 +475,19 @@
       if (data.session) {
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
-        loadProfile();
+        const user = data.session.user;
+        const { data: existing } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        let needCompletion = false;
+        if (!existing || !existing.first_name || !existing.last_name || !existing.gender) {
+          needCompletion = true;
+        }
+        loadProfile().then(() => {
+          if (needCompletion) showCompleteModal();
+        });
       }
     });
   </script>
