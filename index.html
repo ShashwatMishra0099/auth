@@ -6,7 +6,7 @@
   <title>Pro Tournament Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Work+Sans:wght@300;500&display=swap" rel="stylesheet"/>
   <style>
-    /* Global & existing styles ... (unchanged) */
+    /* Global & shared styles (unchanged) */
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:'Work Sans',sans-serif; background:#0a0a0a; color:#e0dede; min-height:100vh; display:flex; flex-direction:column; }
     .container{width:90%;max-width:420px;margin:4rem auto;background:#1a1a1a;border:2px solid #d4af37;border-radius:12px;padding:2rem;box-shadow:0 0 15px rgba(212,175,55,.5);}
@@ -40,17 +40,17 @@
     .game-card img{width:100%;display:block;}
     .game-card h3{text-align:center;margin:.5rem 0;color:#d4af37;font-family:'Orbitron';}
 
-    /* Tourney list */
+    /* Tournament list */
     #view-tourney .container{margin-top:2rem;}
     #back-to-games{background:none;color:#d4af37;border:none;font-family:'Orbitron';margin-bottom:1rem;padding:0;cursor:pointer;}
     #back-to-games:hover{text-decoration:underline;}
     .tourney-item{background:#1a1a1a;border:1px solid #d4af37;padding:1rem;border-radius:8px;margin-bottom:1rem;cursor:pointer;}
     .tourney-item:hover{background:#262626;}
     .tourney-row{display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.9rem;}
-    .tourney-row span{color:#d4af37;} /* gold labels */
+    .tourney-row span{color:#d4af37;} /* gold */
     .slot-bar-bg{height:10px;background:#333;border-radius:5px;overflow:hidden;margin-bottom:.25rem;}
     .slot-bar-fill{height:100%;background:#d4af37;width:0;transition:width .3s;}
-    .slot-text{text-align:right;font-size:.8rem;color:#d4af37;margin-bottom:.5rem;} /* gold count */
+    .slot-text{text-align:right;font-size:.8rem;color:#d4af37;margin-bottom:.5rem;}
     .tourney-item button{width:auto;padding:.5rem 1rem;font-size:.9rem;margin-top:0;}
 
     /* Detail modal */
@@ -58,7 +58,7 @@
     #tourney-detail-modal.hidden{display:none;}
     #tourney-detail-modal .modal-box{background:#1a1a1a;border:2px solid #d4af37;border-radius:12px;padding:2rem;width:90%;max-width:500px;color:#e0dede;max-height:90%;overflow-y:auto;}
     #tourney-detail-modal h3{font-family:'Orbitron';color:#d4af37;margin-bottom:1rem;text-align:center;}
-    #tourney-detail-modal p,label{margin-bottom:1rem;line-height:1.4;color:#d4af37;} /* gold text */
+    #tourney-detail-modal p,label{margin-bottom:1rem;line-height:1.4;color:#d4af37;} /* gold */
     #tourney-detail-modal ul{list-style:none;padding-left:0;}
     #tourney-detail-modal ul li{margin-bottom:.5rem;color:#d4af37;}
     #tourney-detail-modal .close-btn{background:none;border:none;color:#d4af37;font-family:'Orbitron';float:right;font-size:1.2rem;cursor:pointer;}
@@ -68,6 +68,13 @@
     .cred-container h4{margin-bottom:.5rem;color:#b91c1c;}
     .cred-container p{margin-bottom:.5rem;color:#e0dede;}
     .cred-container p strong{color:#d4af37;}
+
+    /* Account submenu */
+    .account-menu{display:flex;gap:1rem;margin-bottom:1rem;}
+    .account-menu button{flex:1;padding:.5rem;font-size:.9rem;}
+    .account-menu .active{background:#d4af37;color:#0a0a0a;}
+    .subsection{display:none;}
+    .subsection.active{display:block;}
   </style>
 </head>
 <body>
@@ -134,7 +141,7 @@
         <p><strong>Per Kill:</strong> <span id="detail-pkill"></span></p>
         <p><strong>Join Fee:</strong> <span id="detail-fee"></span></p>
 
-        <!-- Credentials for joined users -->
+        <!-- Credentials -->
         <div id="cred-box" class="cred-container hidden">
           <h4>Credentials</h4>
           <p><strong>ID:</strong> <span id="detail-cus-id"></span></p>
@@ -151,18 +158,18 @@
 
     <!-- Account -->
     <div id="view-account" class="container hidden">
-      <div class="profile-header">
-        <img id="avatar-img" src="https://via.placeholder.com/100" alt="Avatar"/>
-        <h3 id="display-username">Username</h3>
-        <p>Coins: <span id="display-coins">0</span></p>
+      <div class="account-menu">
+        <button id="menu-profile" class="active" type="button">My Profile</button>
       </div>
-      <div id="success-msg" class="success hidden"></div>
-      <label>First Name</label><input type="text" id="first_name" placeholder="Your first name"/>
-      <label>Last Name</label><input type="text" id="last_name" placeholder="Your last name"/>
-      <label>Gender</label>
-      <select id="gender"><option value="">Select Gender</option><option>Male</option><option>Female</option></select>
-      <button id="update-profile" type="button">Update Profile</button>
-      <button id="logout" style="background:#d32f2f;margin-top:.5rem;" type="button">Log Out</button>
+      <div id="section-profile" class="subsection active">
+        <label>First Name</label><input type="text" id="first_name" placeholder="Your first name"/>
+        <label>Last Name</label><input type="text" id="last_name" placeholder="Your last name"/>
+        <label>Gender</label>
+        <select id="gender"><option value="">Select Gender</option><option>Male</option><option>Female</option></select>
+        <button id="update-profile" type="button">Update Profile</button>
+        <div id="success-msg" class="success hidden"></div>
+      </div>
+      <button id="logout" style="background:#d32f2f;margin-top:1rem;" type="button">Log Out</button>
     </div>
 
     <!-- Footer Nav -->
@@ -224,6 +231,8 @@
           detailMembers = document.getElementById('detail-members');
 
     const viewAccount   = document.getElementById('view-account'),
+          menuProfile   = document.getElementById('menu-profile'),
+          sectionProfile= document.getElementById('section-profile'),
           navHomeBtn    = document.getElementById('nav-home'),
           navAccountBtn = document.getElementById('nav-account'),
           logoutBtn     = document.getElementById('logout'),
@@ -269,23 +278,25 @@
       if (res.error) return showError(res.error.message);
 
       const user = res.data.user;
-      const { data: existing } = await supabaseClient
-        .from('profiles').select('*').eq('id',user.id).single();
-      let need = false;
-      if (!existing) {
+      // ensure profile
+      const { data: existing } = await supabaseClient.from('profiles')
+        .select('*').eq('id',user.id).single();
+      let need=false;
+      if(!existing){
         await supabaseClient.from('profiles').insert({
           id:user.id, username:email,
           avatar_url:AVATARS[Math.floor(Math.random()*AVATARS.length)]
         });
-        need = true;
-      } else if (!existing.first_name||!existing.last_name||!existing.gender) {
-        need = true;
+        need=true;
+      } else if(!existing.first_name||!existing.last_name||!existing.gender){
+        need=true;
       }
 
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
       await loadProfile();
-      if (need) showModal();
+      processRewards();       // process any 'W' results
+      if(need) showModal();
     });
 
     function showModal() {
@@ -295,12 +306,12 @@
       navAccountBtn.classList.add('disabled');
     }
 
-    mSave.addEventListener('click', async () => {
+    mSave.addEventListener('click', async ()=>{
       const f=mfName.value.trim(), l=mlName.value.trim(), g=mGender.value;
-      if (!f||!l||!g) return;
+      if(!f||!l||!g) return;
       const { data: ud } = await supabaseClient.auth.getUser();
       await supabaseClient.from('profiles')
-        .update({ first_name:f,last_name:l,gender:g })
+        .update({first_name:f,last_name:l,gender:g})
         .eq('id',ud.user.id);
       modal.classList.add('hidden');
       navHomeBtn.classList.remove('disabled');
@@ -311,19 +322,18 @@
       loadProfile();
     });
 
-    function setActive(btn) {
+    function setActive(btn){
       [navHomeBtn,navAccountBtn].forEach(x=>x.classList.remove('active'));
       btn.classList.add('active');
     }
-
-    navHomeBtn.addEventListener('click', () => {
+    navHomeBtn.addEventListener('click',()=>{
       if(navHomeBtn.classList.contains('disabled'))return;
       setActive(navHomeBtn);
       viewTourney.classList.add('hidden');
       viewAccount.classList.add('hidden');
       viewHome.classList.remove('hidden');
     });
-    navAccountBtn.addEventListener('click', () => {
+    navAccountBtn.addEventListener('click',()=>{
       if(navAccountBtn.classList.contains('disabled'))return;
       setActive(navAccountBtn);
       viewHome.classList.add('hidden');
@@ -331,12 +341,17 @@
       viewAccount.classList.remove('hidden');
     });
 
+    // show "My Profile" subsection
+    menuProfile.addEventListener('click',()=>{
+      sectionProfile.classList.add('active');
+    });
+
     // Load profile
-    async function loadProfile() {
+    async function loadProfile(){
       const { data: ud } = await supabaseClient.auth.getUser();
       const { data, error } = await supabaseClient.from('profiles')
         .select('*').eq('id',ud.user.id).single();
-      if (error) return showError(error.message);
+      if(error) return showError(error.message);
       avatarImg.src        = data.avatar_url||avatarImg.src;
       dispUser.textContent = data.username;
       dispCoins.textContent= data.coins;
@@ -345,7 +360,7 @@
       genderIn.value       = data.gender||'';
     }
 
-    document.getElementById('update-profile').addEventListener('click', async ()=>{
+    updateBtn.addEventListener('click',async ()=>{
       successMsg.classList.add('hidden');
       const { data: ud } = await supabaseClient.auth.getUser();
       const ups = {
@@ -361,33 +376,69 @@
       loadProfile();
     });
 
-    logoutBtn.addEventListener('click', async ()=>{
+    logoutBtn.addEventListener('click',async ()=>{
       await supabaseClient.auth.signOut();
       app.classList.add('hidden');
       authContainer.classList.remove('hidden');
     });
 
-    window.addEventListener('load', async ()=>{
+    window.addEventListener('load',async ()=>{
       const { data } = await supabaseClient.auth.getSession();
       if(data.session){
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
-        const { user } = data.session;
+        const user = data.session.user;
         const { data: ex } = await supabaseClient.from('profiles')
           .select('*').eq('id',user.id).single();
         const need = !ex||!ex.first_name||!ex.last_name||!ex.gender;
         await loadProfile();
+        processRewards();
         if(need) showModal();
       }
     });
 
-    // Tournament  list
-    gameList.addEventListener('click', async e=>{
+      // Auto-reward winners: once-per-tourney via localStorage
+    async function processRewards(){
+      const { data: ud } = await supabaseClient.auth.getUser();
+      const uid = ud.user.id;
+      const games = [
+        {t:'freefire_tournaments', p:'freefire_participants'},
+        {t:'bgmi_tournaments',       p:'bgmi_participants'}
+      ];
+      let profile = (await supabaseClient.from('profiles')
+        .select('coins').eq('id',uid)).data[0];
+      for(let {t,p} of games){
+        // fetch participants with result=W
+        const { data: wins } = await supabaseClient.from(p)
+          .select('tournament_id')
+          .eq('user_id',uid).eq('result','W');
+        for(let w of wins){
+          const tourId = w.tournament_id;
+          // guard
+          const key = `${t}:${tourId}`;
+          if(localStorage.getItem(key)) continue;
+          // fetch tourney
+          const { data: arr } = await supabaseClient.from(t)
+            .select('join_fee,per_kill').eq('id',tourId);
+          if(!arr.length) continue;
+          const { join_fee,per_kill } = arr[0];
+          const reward = join_fee + per_kill;
+          profile.coins += reward;
+          await supabaseClient.from('profiles')
+            .update({coins:profile.coins}).eq('id',uid);
+          localStorage.setItem(key,'1');
+        }
+      }
+      dispCoins.textContent = profile.coins;
+    }
+
+    // Tournament listing
+    gameList.addEventListener('click',async e=>{
       const card = e.target.closest('.game-card');
       if(!card)return;
       await showTournaments(card.dataset.game);
     });
-    backBtn.addEventListener('click', ()=>{
+    backBtn.addEventListener('click',()=>{
       viewTourney.classList.add('hidden');
       viewHome.classList.remove('hidden');
     });
@@ -396,22 +447,17 @@
       viewHome.classList.add('hidden');
       viewAccount.classList.add('hidden');
       viewTourney.classList.remove('hidden');
-
       const tt = game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
       const pt = game==='freefire'? 'freefire_participants':'bgmi_participants';
-
       tourneyCont.innerHTML='Loading…';
       const { data: tours } = await supabaseClient.from(tt).select('*').order('date',{ascending:true});
-
       const { data: ud } = await supabaseClient.auth.getUser();
-      const userId = ud.user.id;
-
+      const uid=ud.user.id;
       tourneyCont.innerHTML='';
       for(let t of tours){
         const { data: parts } = await supabaseClient.from(pt)
           .select('*').eq('tournament_id',t.id);
-        const joined = parts.some(p=>p.user_id===userId);
-
+        const joined = parts.some(p=>p.user_id===uid);
         const div=document.createElement('div');
         div.className='tourney-item';
         div.innerHTML=`
@@ -420,26 +466,22 @@
           <div class="slot-bar-bg"><div class="slot-bar-fill" style="width:${(parts.length/t.max_slots)*100}%"></div></div>
           <div class="slot-text">${parts.length}/${t.max_slots}</div>
         `;
-        // join btn
         const btn=document.createElement('button');
-        btn.textContent= joined?'Joined':'Join';
-        btn.disabled = joined;
+        btn.textContent=joined?'Joined':'Join';
+        btn.disabled=joined;
         btn.style.marginTop='0';
         btn.addEventListener('click',e=>{
           e.stopPropagation();
-          joinTournament(game,t.id,t.join_fee,t.max_slots);
+          joinTournament(game,t.id,t.join_fee);
         });
         div.appendChild(btn);
-
-        // click for detail
         div.addEventListener('click',()=>showDetail(game,t.id,joined));
-
         tourneyCont.appendChild(div);
       }
     }
 
     async function joinTournament(game,tid,fee){
-      const ign = prompt('Enter your In-Game Name:');
+      const ign=prompt('Enter your In-Game Name:');
       if(!ign)return;
       const pt=game==='freefire'?'freefire_participants':'bgmi_participants';
       const { data: prArr }=await supabaseClient.from('profiles')
@@ -454,11 +496,10 @@
       await showTournaments(game);
     }
 
-    // Detail
     async function showDetail(game,tid,joined){
-      const tt= game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
-      const pt= game==='freefire'? 'freefire_participants':'bgmi_participants';
-      const { data: tourArr }= await supabaseClient.from(tt).select('*').eq('id',tid);
+      const tt=game==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
+      const pt=game==='freefire'? 'freefire_participants':'bgmi_participants';
+      const { data: tourArr }=await supabaseClient.from(tt).select('*').eq('id',tid);
       const t=tourArr[0];
       detailTitle.textContent=`${game.toUpperCase()} Tournament #${t.id}`;
       detailDate.textContent=t.date;
@@ -466,8 +507,6 @@
       detailMap.textContent=t.map;
       detailPKill.textContent=t.per_kill;
       detailFee.textContent=t.join_fee;
-
-      // credentials
       if(joined){
         credBox.classList.remove('hidden');
         detailCusId.textContent   = t.cus_id;
@@ -475,22 +514,16 @@
       } else {
         credBox.classList.add('hidden');
       }
-
-      // description
-      try {
+      try{
         const resp=await fetch('describe.txt');
         detailDesc.textContent=await resp.text();
-      } catch {
+      }catch{
         detailDesc.textContent='No description available.';
       }
-
-      // members
       const { data: parts }=await supabaseClient.from(pt).select('ingame_name').eq('tournament_id',tid);
-      detailMembers.innerHTML=
-        parts.length
-          ? parts.map(p=>`<li>${p.ingame_name}</li>`).join('')
-          : '<li>No participants yet.</li>';
-
+      detailMembers.innerHTML = parts.length
+        ? parts.map(p=>`<li>${p.ingame_name}</li>`).join('')
+        : '<li>No participants yet.</li>';
       detailModal.classList.remove('hidden');
     }
 
