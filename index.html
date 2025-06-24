@@ -38,7 +38,7 @@
       font-size: 1.8rem;
       text-align: center;
       color: #d4af37;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       letter-spacing: 1px;
     }
     p.subtitle {
@@ -125,33 +125,6 @@
       color: #ccc;
     }
 
-    /* ===== Home Card ===== */
-    .tournament-card {
-      background: #111;
-      border: 2px solid #d4af37;
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(212,175,55,0.3);
-      margin: 1rem auto;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-    .tournament-card:hover {
-      transform: translateY(-4px);
-    }
-    .tournament-card img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .tournament-card .caption {
-      padding: 0.75rem;
-      font-family: 'Orbitron', sans-serif;
-      color: #d4af37;
-      letter-spacing: 0.5px;
-    }
-
     /* ===== Footer Nav ===== */
     .footer {
       margin-top: auto;
@@ -174,7 +147,17 @@
       background: #1f1f1f;
       color: #d4af37;
     }
+
+    /* ===== Misc ===== */
+    label {
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+      display: block;
+      color: #ccc;
+    }
   </style>
+
+  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -194,16 +177,11 @@
 
   <!-- APP UI -->
   <div id="app" class="hidden">
-    <!-- Home View -->
     <div id="view-home" class="container">
-      <h2>Current Tournament</h2>
-      <div id="lonewolf-card" class="tournament-card">
-        <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//images%20(1).jpeg" alt="LoneWolf Tournament">
-        <div class="caption">LoneWolf</div>
-      </div>
+      <h2>Welcome, Gamer!</h2>
+      <p class="subtitle">Your pro dashboard awaits. Check your stats & profile.</p>
     </div>
 
-    <!-- Account View -->
     <div id="view-account" class="container hidden">
       <div class="profile-header">
         <img id="avatar-img" src="https://via.placeholder.com/100" alt="Avatar"/>
@@ -222,10 +200,10 @@
         <option>Female</option>
       </select>
       <button id="update-profile">Update Profile</button>
-      <button id="logout" style="background:#d32f2f;">Log Out</button>
+      <button id="logout" style="background:#d32f2f; margin-top:0.5rem;">Log Out</button>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer Navigation -->
     <div class="footer">
       <button id="nav-home" class="active">Home</button>
       <button id="nav-account">Account</button>
@@ -233,16 +211,20 @@
   </div>
 
   <script>
+    // ——— CONFIGURE SUPABASE ———
     const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ——— AVATAR POOL ———
     const AVATARS = [
-      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_154647_182.jpg",
-      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_155317_564.jpg",
-      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_155320_645.jpg",
-      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon//IMG_20250623_155833_404.jpg"
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_154647_182.jpg",
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155320_645.jpg",
+      "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155833_404.jpg"
     ];
-     // ——— ELEMENTS ———
+
+    // ——— ELEMENTS ———
     const authContainer = document.getElementById('auth-container');
     const authTitle     = document.getElementById('auth-title');
     const emailInput    = document.getElementById('email');
@@ -304,18 +286,23 @@
       }
       if (res.error) return showError(res.error.message);
 
-      // Ensure profile exists with random avatar on sign-up
+      // Check if profile exists; if not, seed it with random avatar
       const user = res.data.user;
       const { data: existing } = await supabaseClient
         .from('profiles')
         .select('id')
         .eq('id', user.id)
         .single();
+
       if (!existing) {
         const randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
         await supabaseClient
           .from('profiles')
-          .insert({ id: user.id, username: email, avatar_url: randomAvatar });
+          .insert({
+            id: user.id,
+            username: email,
+            avatar_url: randomAvatar
+          });
       }
 
       authContainer.classList.add('hidden');
@@ -323,18 +310,29 @@
       loadProfile();
     });
 
-    // Navigation helpers
-    function setActive(btn) { document.querySelectorAll('.footer button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    navHomeBtn.addEventListener('click', () => { setActive(navHomeBtn); viewHome.classList.remove('hidden'); viewAccount.classList.add('hidden'); });
-    navAccountBtn.addEventListener('click', () => { setActive(navAccountBtn); viewHome.classList.add('hidden'); viewAccount.classList.remove('hidden'); });
+    // Navigation
+    function setActive(button) {
+      [navHomeBtn, navAccountBtn].forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+    }
+    navHomeBtn.addEventListener('click', () => {
+      setActive(navHomeBtn);
+      viewHome.classList.remove('hidden');
+      viewAccount.classList.add('hidden');
+    });
+    navAccountBtn.addEventListener('click', () => {
+      setActive(navAccountBtn);
+      viewHome.classList.add('hidden');
+      viewAccount.classList.remove('hidden');
+    });
 
     // Load profile data
     async function loadProfile() {
-      const { data: u } = await supabaseClient.auth.getUser();
+      const { data: userData } = await supabaseClient.auth.getUser();
       const { data, error } = await supabaseClient
         .from('profiles')
         .select('*')
-        .eq('id', u.user.id)
+        .eq('id', userData.user.id)
         .single();
       if (error) return showError(error.message);
 
