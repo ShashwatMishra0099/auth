@@ -6,15 +6,15 @@
   <title>Pro Tournament Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Work+Sans:wght@300;500&display=swap" rel="stylesheet"/>
   <style>
-    /* Core & existing styles unchanged… */
+    /* Core styles */
     * { box-sizing:border-box; margin:0; padding:0 }
     body { font-family:'Work Sans',sans-serif; background:#0a0a0a; color:#e0dede; min-height:100vh; display:flex; flex-direction:column }
     .container{width:90%;max-width:420px;margin:4rem auto;background:#1a1a1a;border:2px solid #d4af37;border-radius:12px;padding:2rem;box-shadow:0 0 15px rgba(212,175,55,.5)}
-    .hidden{display:none!important}
+    .hidden{display:none}
     h2{font-family:'Orbitron';font-size:1.8rem;text-align:center;color:#d4af37;margin-bottom:1rem}
     p.subtitle{ text-align:center;font-size:.9rem;margin-bottom:1.5rem;color:#aaa}
     input,select{width:100%;padding:.75rem 1rem;margin-bottom:1rem;background:#0f0f0f;border:1px solid #333;border-radius:8px;color:#e0dede}
-    button{width:100%;padding:.85rem;margin-bottom:1rem;background:linear-gradient(135deg,#d4af37,#b5912b);border:none;border-radius:8px;font-family:'Orbitron';color:#0a0a0a;cursor:pointer;transition:transform .15s,box-shadow .15s}
+    button{width:100%;padding:.85rem;margin-bottom:1rem;background:linear-gradient(135deg,#d4af37,#b5912b);border:none;border-radius:8px;font-family:'Orbitron',sans-serif;color:#0a0a0a;cursor:pointer;transition:transform .15s,box-shadow .15s}
     button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,175,55,.4)}
     button:disabled{opacity:.5;cursor:not-allowed}
     .error,.success{font-size:.85rem;margin-bottom:1rem;text-align:center;border-radius:6px;padding:.5rem}
@@ -25,7 +25,7 @@
     .profile-header h3{font-family:'Orbitron';color:#d4af37;margin-bottom:.25rem}
     .profile-header p{font-size:.9rem;color:#ccc}
     .footer{margin-top:auto;display:flex;background:#121212;border-top:2px solid #333}
-    .footer button{flex:1;background:none;color:#e0dede;border:none;font-family:'Orbitron';padding:1rem;transition:background .2s}
+    .footer button{flex:1;background:none;color:#e0dede;border:none;font-family:'Orbitron',sans-serif;padding:1rem;transition:background .2s}
     .footer button:hover:not(.disabled),.footer .active{background:#1f1f1f;color:#d4af37}
     .footer .disabled{opacity:.5;cursor:not-allowed}
 
@@ -41,11 +41,10 @@
     .game-card img{width:100%;display:block}
     .game-card h3{text-align:center;margin:.5rem 0;color:#d4af37;font-family:'Orbitron'}
 
-    /* Tournament screen */
+    /* Tournament list */
     #view-tourney .container{margin-top:2rem}
-    #back-to-games{background:none;color:#d4af37;border:none;font-family:'Orbitron';margin-bottom:1rem;padding:0;cursor:pointer}
+    #back-to-games{background:none;color:#d4af37;border:none;font-family:'Orbitron',sans-serif;margin-bottom:1rem;padding:0;cursor:pointer}
     #back-to-games:hover{text-decoration:underline}
-
     .tourney-nav{display:flex;margin-bottom:1rem}
     .tourney-nav button{flex:1;margin-right:.5rem;background:none;border:1px solid #d4af37;color:#d4af37;padding:.5rem;border-radius:6px;cursor:pointer}
     .tourney-nav button:last-child{margin-right:0}
@@ -66,13 +65,17 @@
     #tourney-detail-modal h3{font-family:'Orbitron';color:#d4af37;margin-bottom:1rem;text-align:center}
     #tourney-detail-modal p,label,ul li{margin-bottom:1rem;line-height:1.4;color:#d4af37}
     #tourney-detail-modal ul{list-style:none;padding:0}
-    #tourney-detail-modal .close-btn{background:none;border:none;color:#d4af37;font-family:'Orbitron';float:right;font-size:1.2rem;cursor:pointer}
+    #tourney-detail-modal .close-btn{background:none;border:none;color:#d4af37;font-family:'Orbitron',sans-serif;float:right;font-size:1.2rem;cursor:pointer}
 
-    /* Credentials container */
+    /* Credential box */
     .cred-container{background:#0a0a0a;border:2px solid #b91c1c;border-radius:8px;padding:1rem;margin-bottom:1rem}
     .cred-container h4{margin-bottom:.5rem;color:#b91c1c}
     .cred-container p{margin-bottom:.5rem;color:#e0dede}
     .cred-container p strong{color:#d4af37}
+
+    /* Reward-collected styling */
+    .collected { background:#228B22 !important; color:#fff !important; }
+    .lost      { background:#b91c1c !important; color:#fff !important; }
   </style>
 </head>
 <body>
@@ -90,7 +93,7 @@
     </p>
   </div>
 
-  <!-- PROFILE COMPLETION MODAL -->
+  <!-- PROFILE MODAL -->
   <div id="complete-profile-modal" class="hidden">
     <div class="modal-content">
       <h3>Complete Your Profile</h3>
@@ -103,8 +106,9 @@
     </div>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- APP -->
   <div id="app" class="hidden">
+
     <!-- HOME -->
     <div id="view-home" class="container">
       <h2>Choose Your Game</h2>
@@ -185,11 +189,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Supabase init
     const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Avatars
+    // Avatar pool
     const AVATARS = [
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_154647_182.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
@@ -263,8 +268,8 @@
       errorMsg.classList.add('hidden');
     }
 
-    // Toggle auth
-    toggleAuth.addEventListener('click', e => {
+    // Toggle auth form
+    toggleAuth.addEventListener('click', e=>{
       e.preventDefault(); clearError();
       isLogin = !isLogin;
       authTitle.textContent  = isLogin?'Log In':'Sign Up';
@@ -275,47 +280,49 @@
     });
 
     // Handle auth
-    authButton.addEventListener('click', async () => {
+    authButton.addEventListener('click',async()=>{
       clearError();
-      const email = emailInput.value.trim(), pass = passInput.value.trim();
-      if (!email || !pass) return showError('Email/password required.');
-      const res = isLogin
-        ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
-        : await supabaseClient.auth.signUp({ email, password: pass });
-      if (res.error) return showError(res.error.message);
+      const email=emailInput.value.trim(),pass=passInput.value.trim();
+      if(!email||!pass)return showError('Email/password required.');
+      const res=isLogin
+        ?await supabaseClient.auth.signInWithPassword({email,password:pass})
+        :await supabaseClient.auth.signUp({email,password:pass});
+      if(res.error)return showError(res.error.message);
 
-      const user = res.data.user;
-      const { data: existing } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-      let need = false;
-      if (!existing) {
+      const user=res.data.user;
+      const {data:existing} = await supabaseClient.from('profiles')
+        .select('*').eq('id',user.id).single();
+      let need=false;
+      if(!existing){
         await supabaseClient.from('profiles').insert({
-          id: user.id,
-          username: email,
-          avatar_url: AVATARS[Math.floor(Math.random()*AVATARS.length)]
+          id:user.id,username:email,
+          avatar_url:AVATARS[Math.floor(Math.random()*AVATARS.length)]
         });
-        need = true;
-      } else if (!existing.first_name||!existing.last_name||!existing.gender) {
-        need = true;
+        need=true;
+      } else if(!existing.first_name||!existing.last_name||!existing.gender){
+        need=true;
       }
 
       authContainer.classList.add('hidden');
       app.classList.remove('hidden');
       await loadProfile();
-      if (need) showModal();
+      if(need)showModal();
     });
 
     function showModal(){
-      mfName.value=''; mlName.value=''; mGender.value='';
+      mfName.value='';mlName.value='';mGender.value='';
       modal.classList.remove('hidden');
       navHomeBtn.classList.add('disabled');
       navAccountBtn.classList.add('disabled');
     }
 
-    mSave.addEventListener('click', async()=>{
+    mSave.addEventListener('click',async()=>{
       const f=mfName.value.trim(),l=mlName.value.trim(),g=mGender.value;
       if(!f||!l||!g)return;
       const {data:ud}=await supabaseClient.auth.getUser();
-      await supabaseClient.from('profiles').update({first_name:f,last_name:l,gender:g}).eq('id',ud.user.id);
+      await supabaseClient.from('profiles')
+        .update({first_name:f,last_name:l,gender:g})
+        .eq('id',ud.user.id);
       modal.classList.add('hidden');
       navHomeBtn.classList.remove('disabled');
       navAccountBtn.classList.remove('disabled');
@@ -345,25 +352,25 @@
       viewAccount.classList.remove('hidden');
     });
 
-    // Profile
+    // Load profile
     async function loadProfile(){
       const {data:ud}=await supabaseClient.auth.getUser();
-      const {data,error}=await supabaseClient.from('profiles').select('*').eq('id',ud.user.id).single();
-      if(error) return showError(error.message);
-      avatarImg.src=data.avatar_url||avatarImg.src;
-      dispUser.textContent=data.username;
-      dispCoins.textContent=data.coins;
-      firstNameIn.value=data.first_name||'';
-      lastNameIn.value=data.last_name||'';
-      genderIn.value=data.gender||'';
+      const {data,error}=await supabaseClient.from('profiles')
+        .select('*').eq('id',ud.user.id).single();
+      if(error)return showError(error.message);
+      avatarImg.src        = data.avatar_url||avatarImg.src;
+      dispUser.textContent = data.username;
+      dispCoins.textContent= data.coins;
+      firstNameIn.value    = data.first_name||'';
+      lastNameIn.value     = data.last_name||'';
+      genderIn.value       = data.gender||'';
     }
-
     updateBtn.addEventListener('click',async()=>{
       successMsg.classList.add('hidden');
       const {data:ud}=await supabaseClient.auth.getUser();
       const ups={first_name:firstNameIn.value.trim(),last_name:lastNameIn.value.trim(),gender:genderIn.value};
       const {error}=await supabaseClient.from('profiles').update(ups).eq('id',ud.user.id);
-      if(error) return showError(error.message);
+      if(error)return showError(error.message);
       successMsg.textContent='Profile updated!';
       successMsg.classList.remove('hidden');
       loadProfile();
@@ -374,19 +381,20 @@
       authContainer.classList.remove('hidden');
     });
     window.addEventListener('load',async()=>{
-      const {data} = await supabaseClient.auth.getSession();
+      const {data}=await supabaseClient.auth.getSession();
       if(data.session){
         authContainer.classList.add('hidden');
         app.classList.remove('hidden');
         const user=data.session.user;
-        const {data:ex}=await supabaseClient.from('profiles').select('*').eq('id',user.id).single();
+        const {data:ex}=await supabaseClient.from('profiles')
+          .select('*').eq('id',user.id).single();
         const need=!ex||!ex.first_name||!ex.last_name||!ex.gender;
         await loadProfile();
-        if(need) showModal();
+        if(need)showModal();
       }
     });
 
-      // Tournaments
+       // Tournament Listing
     gameList.addEventListener('click',async e=>{
       const card=e.target.closest('.game-card');
       if(!card)return;
@@ -414,33 +422,35 @@
     }
 
     async function showTournaments(){
-      const tt = currentGame==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
-      const pt = currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
+      const tt=currentGame==='freefire'? 'freefire_tournaments':'bgmi_tournaments';
+      const pt=currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
       tourneyCont.innerHTML='Loading…';
-      const {data:tours} = await supabaseClient.from(tt).select('*').order('date',{ascending:true});
-      const {data:ud} = await supabaseClient.auth.getUser();
+      const {data:tours}=await supabaseClient.from(tt).select('*').order('date',{ascending:true});
+      const {data:ud}=await supabaseClient.auth.getUser();
       const userId=ud.user.id;
       tourneyCont.innerHTML='';
 
       for(let t of tours){
-        // skip
+        // omit ended unseen
         if(t.status==='END'){
-          const {data:part}=await supabaseClient.from(pt)
+          const {data:p}=await supabaseClient.from(pt)
             .select('id').eq('tournament_id',t.id).eq('user_id',userId);
-          if(part.length===0) continue;
+          if(!p.length) continue;
         }
-        const {data:mine} = await supabaseClient.from(pt)
+        // participation
+        const {data:mine} =await supabaseClient.from(pt)
           .select('*').eq('tournament_id',t.id).eq('user_id',userId);
-        const joined = mine.length>0;
-        const result = joined? mine[0].result : null;
+        const joined=mine.length>0;
+        const result=joined?mine[0].result:null;
+        const rewardState= joined? mine[0].reward : null;
 
         // filter
         if(filter==='upcoming' && (joined||t.status!=='ON')) continue;
         if(filter==='ongoing'  && (!joined||t.status!=='ON')) continue;
-        if(filter==='completed'&& (!joined||t.status!==='END')) continue;
+        if(filter==='completed'&& (!joined||t.status!=='END'))continue;
 
-        const {data:parts} = await supabaseClient.from(pt)
-          .select('*').eq('tournament_id',t.id);
+        const {data:parts} =await supabaseClient.from(pt)
+          .select('id').eq('tournament_id',t.id);
 
         const div=document.createElement('div');
         div.className='tourney-item';
@@ -450,20 +460,23 @@
           <div class="slot-bar-bg"><div class="slot-bar-fill" style="width:${(parts.length/t.max_slots)*100}%"></div></div>
           <div class="slot-text">${parts.length}/${t.max_slots}</div>
         `;
-        const btn=document.createElement('button');
-        if(joined){
-          btn.textContent='Joined'; btn.disabled=true;
-        } else if(parts.length>=t.max_slots){
-          btn.textContent='Full'; btn.disabled=true;
+        // Join / Full button
+        const joinBtn=document.createElement('button');
+        if(parts.length>=t.max_slots){
+          joinBtn.innerText='Full';
+          joinBtn.disabled=true;
         } else {
-          btn.textContent='Join'; btn.disabled=false;
-          btn.addEventListener('click',e=>{
-            e.stopPropagation();
-            joinTournament(t.id,t.join_fee);
-          });
+          joinBtn.innerText=joined?'Joined':'Join';
+          joinBtn.disabled=joined;
         }
-        div.appendChild(btn);
-        div.addEventListener('click',()=>showDetail(t,joined,result));
+        joinBtn.addEventListener('click',e=>{
+          e.stopPropagation();
+          joinTournament(t.id,t.join_fee);
+        });
+        div.appendChild(joinBtn);
+
+        // click detail
+        div.addEventListener('click',()=>showDetail(t,joined,result,rewardState));
         tourneyCont.appendChild(div);
       }
     }
@@ -484,18 +497,19 @@
       showTournaments();
     }
 
-    async function showDetail(t,joined,result){
-      detailTitle.textContent=`${currentGame.toUpperCase()} Tournament #${t.id}`;
+    async function showDetail(t,joined,result,rewardState){
+      detailTitle.textContent=`${currentGame.toUpperCase()} #${t.id}`;
       detailDate.textContent=t.date;
       detailTime.textContent=t.time;
       detailMap.textContent=t.map;
       detailPKill.textContent=t.per_kill;
       detailFee.textContent=t.join_fee;
 
+      // credentials only for joined
       if(joined){
         credBox.classList.remove('hidden');
-        detailCusId.textContent=t.cus_id;
-        detailCusPass.textContent=t.cus_pass;
+        detailCusId.textContent   = t.cus_id;
+        detailCusPass.textContent = t.cus_pass;
       } else {
         credBox.classList.add('hidden');
       }
@@ -503,7 +517,7 @@
       try{
         const resp=await fetch('describe.txt');
         detailDesc.textContent=await resp.text();
-      }catch{
+      } catch {
         detailDesc.textContent='No description available.';
       }
 
@@ -514,70 +528,68 @@
         ? parts.map(p=>`<li>${p.ingame_name}</li>`).join('')
         : '<li>No participants yet.</li>';
 
-      // Fetch reward status
-      let rewardStatus = null;
-      if(joined){
-        const { data: me } = await supabaseClient.from(pt)
-          .select('reward').eq('tournament_id',t.id).eq('user_id',(await supabaseClient.auth.getUser()).data.user.id).single();
-        rewardStatus = me.reward;
-      }
-
+      // settle logic
       if(joined && result==='W'){
-        if(rewardStatus==='SUCCESS'){
-          settleBtn.textContent='Reward Collected';
-          settleBtn.style.background='#22c55e'; // green
+        if(rewardState==='SUCCESS'){
+          settleBtn.innerText='Reward Collected';
           settleBtn.disabled=true;
+          settleBtn.classList.add('collected');
         } else {
-          settleBtn.textContent='Settle Reward';
-          settleBtn.style.background='linear-gradient(135deg,#d4af37,#b5912b)';
+          settleBtn.innerText='Settle Reward';
           settleBtn.disabled=false;
-          settleBtn.onclick=()=>settleRewards(t.per_kill,t.id);
+          settleBtn.classList.remove('collected','lost');
+          settleBtn.onclick=()=>settleRewards(t.id,t.per_kill);
         }
       } else if(joined && result==='L'){
-        settleBtn.textContent='You Lost';
-        settleBtn.style.background='#b91c1c'; settleBtn.style.color='#fff';
+        settleBtn.innerText='You Lost';
         settleBtn.disabled=false;
-        settleBtn.onclick=()=>{
+        settleBtn.classList.add('lost');
+        settleBtn.onclick=()=> {
+          // mark FAILED if not already
+          supabaseClient.from(pt)
+            .update({reward:'L'}).eq('tournament_id',t.id).eq('user_id',(await supabaseClient.auth.getUser()).data.user.id);
           detailModal.classList.add('hidden');
           viewTourney.classList.add('hidden');
           viewHome.classList.remove('hidden');
           setActive(navHomeBtn);
         };
       } else {
-        settleBtn.textContent='Settle Reward';
+        settleBtn.innerText='Settle Reward';
         settleBtn.disabled=true;
+        settleBtn.classList.remove('collected','lost');
       }
 
       detailModal.classList.remove('hidden');
     }
 
-    closeDetail.addEventListener('click',()=>detailModal.classList.add('hidden'));
-
-    async function settleRewards(perKill,tid){
-      const pt = currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
-      // get winners records
+    async function settleRewards(tid, perKill){
+      const pt=currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
+      // update reward column first
       const { data: winners } = await supabaseClient.from(pt)
         .select('user_id').eq('tournament_id',tid).eq('result','W');
-
-      for(let w of winners){
-        // credit profile
-        const {data:[p]} = await supabaseClient.from('profiles')
-          .select('coins').eq('id',w.user_id);
+      // credit coins & update reward for each winner
+      for(const w of winners){
+        // only credit if null
+        const { data: row } = await supabaseClient.from(pt)
+          .select('reward').eq('tournament_id',tid).eq('user_id',w.user_id).single();
+        if(row.reward!==null) continue;
+        // credit
+        const { data: prof } = await supabaseClient.from('profiles')
+          .select('coins').eq('id',w.user_id).single();
         await supabaseClient.from('profiles')
-          .update({coins: p.coins + perKill})
+          .update({coins: prof.coins + perKill})
           .eq('id',w.user_id);
-
-        // mark reward success for participant
+        // mark SUCCESS
         await supabaseClient.from(pt)
-          .update({reward: 'SUCCESS'})
-          .eq('tournament_id',tid)
-          .eq('user_id',w.user_id);
+          .update({reward:'SUCCESS'}).eq('tournament_id',tid).eq('user_id',w.user_id);
       }
-
-      alert('Rewards settled: +' + perKill + ' coins each winner');
+      alert('Rewards settled!');
       detailModal.classList.add('hidden');
       showTournaments();
     }
+
+    // close detail
+    closeDetail.addEventListener('click',()=>detailModal.classList.add('hidden'));
   </script>
 </body>
 </html>
