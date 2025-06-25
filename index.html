@@ -1,82 +1,4 @@
-1px" id="modal-last-name"  placeholder="Last Name" />
-      <select id="modal-gender">
-        <option value="">Select Gender</option><option>Male</option><option>Female</option>
-      </select>
-      <button id="modal-save-profile" class="btn">Save Profile</button>
-    </div>
-  </div>
-
-  <!-- APP -->
-  <div id="app" class="hidden">
-
-    <!-- HOME -->
-    <div id="view-home" class="container">
-      <h2>Choose Your Game</h2>
-      <div class="game-grid" id="game-list">
-        <div class="game-card" data-game="freefire">
-          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg" alt="Free Fire"/>
-          <h3>Free Fire</h3>
-        </div>
-        <div class="game-card" data-game="bgmi">
-          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download%20(1).jpeg" alt="BGMI"/>
-          <h3>BGMI</h3>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOURNAMENTS -->
-    <div id="view-tourney" class="container hidden">
-      <button id="back-to-games" class="btn" style="background:transparent;color:var(--accent);margin-bottom: var(--spacing);">← Back to Games</button>
-      <div class="tourney-nav">
-        <button id="nav-upcoming" class="active-nav">Upcoming</button>
-        <button id="nav-ongoing">Ongoing</button>
-        <button id="nav-completed">Completed</button>
-      </div>
-      <div id="tournaments-container"></div>
-    </div>
-
-    <!-- DETAIL MODAL -->
-    <div id="tourney-detail-modal" class="hidden">
-      <div class="modal-box">
-        <button class="close-btn" id="close-detail">&times;</button>
-        <h3 id="detail-title"></h3>
-        <p><strong>Date:</strong> <span id="detail-date"></span></p>
-        <p><strong>Time:</strong> <span id="detail-time"></span></p>
-        <p><strong>Map:</strong> <span id="detail-map"></span></p>
-        <p><strong>Per Kill:</strong> <span id="detail-pkill"></span></p>
-        <p><strong>Join Fee:</strong> <span id="detail-fee"></span></p>
-
-        <div id="cred-box" class="cred-container hidden">
-          <h4>Credentials</h4>
-          <p><strong>ID:</strong> <span id="detail-cus-id"></span></p>
-          <p><strong>Password:</strong> <span id="detail-cus-pass"></span></p>
-        </div>
-
-        <h4>Description</h4>
-        <p id="detail-desc">Loading…</p>
-
-        <h4>Participants</h4>
-        <ul id="detail-members"></ul>
-
-        <button id="settle-rewards" class="btn">Settle Reward</button>
-      </div>
-    </div>
-
-    <!-- ACCOUNT -->
-    <div id="view-account" class="container hidden">
-      <div class="profile-header">
-        <img id="avatar-img" src="" alt="Avatar"/>
-        <h3 id="display-username"></h3>
-        <p>Coins: <span id="display-coins"></span></p>
-      </div>
-
-
-    // Elements
-    const authContainer = document.getElementById('auth-container'),
-          authTitle     = document.getElementById('auth-title'),
-          emailInput    = document.getElementById('email'),
-          passInput     = document.getElementById('password'),
-          authButton    = document.getElemen<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -274,7 +196,14 @@
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155320_645.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155833_404.jpg"
-    ];tById('auth-button'),
+    ];
+
+    // Elements
+    const authContainer = document.getElementById('auth-container'),
+          authTitle     = document.getElementById('auth-title'),
+          emailInput    = document.getElementById('email'),
+          passInput     = document.getElementById('password'),
+          authButton    = document.getElementById('auth-button'),
           toggleAuth    = document.getElementById('toggle-auth'),
           errorMsg      = document.getElementById('error-msg'),
 
@@ -449,7 +378,7 @@
       }
     });
 
-     // Tournament listing
+      // Tournament listing
     gameList.addEventListener('click',async e=>{
       const card=e.target.closest('.game-card');
       if(!card) return;
