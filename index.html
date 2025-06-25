@@ -3,84 +3,130 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Neo Tournament Dashboard</title>
+  <title>Pro Tournament Dashboard</title>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rubik:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500&display=swap" rel="stylesheet"/>
   <style>
+    /* CSS Variables & Reset */
     :root {
-      --bg: #080a12;
-      --panel: rgba(255,255,255,0.05);
+      --bg: #0a0f17;
+      --surface: #112233;
       --accent: #00e0ff;
-      --accent-dark: #0083a3;
-      --text: #e0e6f1;
-      --text-muted: #7a8aa2;
-      --red: #ff4b4b;
-      --green: #4bff95;
-      --radius: 12px;
-      --transition:.2s ease;
+      --accent-dark: #00b8cc;
+      --error: #ff3860;
+      --success: #23d160;
+      --text: #e0e6f0;
+      --text-secondary: #a0a8b8;
+      --card-radius: 12px;
+      --spacing: 1rem;
+      --transition: 0.2s;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-base: 'Inter', sans-serif;
     }
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body { background: var(--bg); color: var(--text); font-family:'Rubik',sans-serif; min-height:100vh; display:flex; flex-direction:column; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: var(--font-base); background: var(--bg); color: var(--text); display:flex; flex-direction:column; min-height:100vh; }
     a { color: var(--accent); text-decoration:none; }
-    h1,h2,h3 { font-family:'Orbitron',sans-serif; color:var(--accent); }
+    a:hover { text-decoration: underline; }
+    button { font-family: var(--font-heading); }
 
-    /* Glass panels */
-    .container, .modal-content, .card { background: var(--panel); backdrop-filter: blur(12px); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,.6); padding:1.5rem; margin:1rem auto; }
-    .container { width:90%; max-width:480px; }
+    /* Container */
+    .container { width:90%; max-width:480px; margin: var(--spacing) auto; padding: var(--spacing); background: var(--surface); border-radius: var(--card-radius); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
 
-    /* Buttons */
-    button { cursor:pointer; font-family:'Orbitron'; font-weight:500; border:none; border-radius: var(--radius); padding:.8rem; transition:var(--transition); }
-    .btn-primary { background: linear-gradient(135deg,var(--accent),var(--accent-dark)); color:#080a12; }
-    .btn-primary:hover { background: linear-gradient(135deg,var(--accent-dark),var(--accent)); }
-    .btn-danger { background: var(--red); color:#080a12; }
-    .btn-disabled { opacity:.4; cursor:not-allowed; }
+    /* Utility */
+    .hidden { display:none!important; }
+    .flex { display:flex; }
+    .center { justify-content:center; align-items:center; }
+    .mb { margin-bottom: var(--spacing); }
+    .mt { margin-top: var(--spacing); }
+    .rounded { border-radius: var(--card-radius); }
 
-    /* Inputs */
-    input, select { width:100%; padding:.7rem; margin-bottom:1rem; background:rgba(255,255,255,0.05); border:1px solid var(--accent-dark); border-radius:var(--radius); color:var(--text); }
+    /* Headings & Text */
+    h1,h2,h3,h4 { font-family: var(--font-heading); color: var(--accent); }
+    h2 { font-size:1.8rem; margin-bottom:.5rem; text-align:center; }
+    p.subtitle { font-size:.9rem; color: var(--text-secondary); margin-bottom: var(--spacing); text-align:center; }
 
-    /* Headings */
-    h2 { text-align:center; margin-bottom:1rem; }
+    /* Inputs & Buttons */
+    input, select {
+      width:100%; padding:.75rem; margin-bottom: var(--spacing);
+      border:1px solid var(--accent-dark); background: #0d1520; color: var(--text);
+      border-radius: var(--card-radius); transition: border-color var(--transition);
+    }
+    input:focus, select:focus { border-color: var(--accent); outline:none; }
+    .btn {
+      padding:.75rem; background: var(--accent); color: var(--bg);
+      border:none; border-radius: var(--card-radius); cursor:pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn:hover { background: var(--accent-dark); transform: translateY(-2px); }
+    .btn.disabled, .btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
 
-    /* Auth */
-    #auth-container { margin-top:4rem; text-align:center; }
-    #auth-container a { font-size:.9rem; }
+    /* Feedback */
+    .feedback { padding:.5rem; border-radius:6px; font-size:.85rem; text-align:center; margin-bottom: var(--spacing); }
+    .error { background: rgba(255,56,96,0.2); color: var(--error); }
+    .success { background: rgba(35,209,96,0.2); color: var(--success); }
 
-    /* Profile header */
-    .profile-header { text-align:center; }
-    .profile-header img { width:80px; height:80px; border-radius:50%; border:2px solid var(--accent); margin-bottom:.5rem; }
+    /* Profile Modal */
+    #complete-profile-modal {
+      position:fixed; top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:1000;
+    }
+    #complete-profile-modal .modal-content {
+      background: var(--surface); padding:2rem; border-radius: var(--card-radius);
+      width:90%; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.7);
+    }
 
-    /* Footer nav */
-    .footer { margin-top:auto; display:flex; }
-    .footer button { flex:1; background:transparent; color:var(--text-muted); padding:1rem; transition:var(--transition); }
-    .footer button.active, .footer button:hover { color:var(--accent); }
-
-    /* Game grid */
-    .game-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-    .game-card { overflow:hidden; border-radius:var(--radius); cursor:pointer; transition:var(--transition); border:1px solid var(--accent-dark); }
-    .game-card:hover { border-color:var(--accent); }
+    /* Game Cards */
+    .game-grid { display:grid; grid-template-columns:1fr 1fr; gap: var(--spacing); }
+    .game-card {
+      background: #16212a; border:2px solid var(--accent-dark); border-radius: var(--card-radius);
+      overflow:hidden; cursor:pointer; transition: border-color var(--transition), transform var(--transition);
+    }
+    .game-card:hover { border-color: var(--accent); transform: translateY(-4px); }
     .game-card img { width:100%; display:block; }
-    .game-card h3 { text-align:center; padding:.5rem; color:var(--text); }
+    .game-card h3 { text-align:center; padding:.5rem; color:var(--accent); }
 
-    /* Tournament nav */
-    .tourney-nav { display:flex; gap:.5rem; margin-bottom:1rem; }
-    .tourney-nav button { flex:1; background:transparent; border:1px solid var(--accent); color:var(--text-muted); transition:var(--transition); }
-    .tourney-nav .active-nav { background:var(--accent-dark); color:var(--text); }
+    /* Tournament Nav */
+    .tourney-nav { display:flex; gap:.5rem; margin-bottom: var(--spacing); }
+    .tourney-nav button {
+      flex:1; padding:.5rem; background: var(--surface); border:1px solid var(--accent-dark);
+      color:var(--accent); border-radius:6px; cursor:pointer; transition: background var(--transition);
+    }
+    .tourney-nav .active-nav { background: var(--accent); color: var(--bg); }
 
-    /* Cards */
-    .card { margin-bottom:1rem; cursor:pointer; transition:var(--transition); }
-    .card:hover { transform:translateY(-4px); }
-    .card-row { display:flex; justify-content:space-between; font-size:.9rem; margin-bottom:.5rem; }
-    .slot-bar { position:relative; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-bottom:.5rem; }
-    .slot-fill { height:100%; background:var(--accent); width:0%; transition:var(--transition); }
-    .slot-text { font-size:.8rem; color:var(--text-muted); text-align:right; }
+    /* Tournament Items */
+    .tourney-item {
+      background:#16212a; border:1px solid var(--accent-dark); border-radius: var(--card-radius);
+      padding: var(--spacing); margin-bottom: var(--spacing); transition: background var(--transition), transform var(--transition);
+    }
+    .tourney-item:hover { background: #1f2d3a; transform: translateY(-2px); }
+    .tourney-row { display:flex; justify-content:space-between; font-size:.9rem; color:var(--accent); margin-bottom:.5rem; }
+    .slot-bar-bg { background:#0f1a26; height:8px; border-radius:4px; overflow:hidden; margin-bottom:.5rem; }
+    .slot-bar-fill { background:var(--accent); height:100%; width:0%; transition:width .3s; }
+    .slot-text { text-align:right; font-size:.8rem; color:var(--text-secondary); margin-bottom:.5rem; }
 
-    /* Detail modal */
-    .modal-backdrop { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; }
-    .modal-content { width:90%; max-width:500px; position:relative; }
-    .modal-content .close-btn { position:absolute;top:.5rem;right:.5rem;background:none;color:var(--accent);font-size:1.5rem; }
+    /* Detail Modal */
+    #tourney-detail-modal {
+      position:fixed; top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; z-index:1000;
+    }
+    #tourney-detail-modal .modal-box {
+      background: var(--surface); padding:2rem; border-radius: var(--card-radius);
+      width:90%; max-width:500px; max-height:90vh; overflow-y:auto; box-shadow:0 4px 30px rgba(0,0,0,0.7);
+    }
+    #tourney-detail-modal h3{ margin-bottom:1rem; color:var(--accent); text-align:center; }
+    #tourney-detail-modal p, #tourney-detail-modal li { color: var(--text-secondary); margin-bottom:1rem; }
+    #tourney-detail-modal .close-btn {
+      position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; color:var(--accent); cursor:pointer;
+    }
 
-    /* Misc */
-    .text-muted { color:var(--text-muted); font-size:.85rem; margin-bottom:1rem; }
+    /* Credentials */
+    .cred-container {
+      background:#0f1a26; border:2px solid #b91c1c; border-radius: var(--card-radius);
+      padding: var(--spacing); margin-bottom: var(--spacing);
+    }
+    .cred-container h4 { color:#b91c1c; margin-bottom:.5rem; }
+    .cred-container p { color:var(--text); }
+
   </style>
 </head>
 <body>
@@ -88,28 +134,33 @@
   <!-- AUTH -->
   <div id="auth-container" class="container">
     <h2 id="auth-title">Sign Up</h2>
-    <p class="text-muted">Welcome to the Neo Tournament Arena</p>
-    <div id="error-msg" class="error hidden"></div>
-    <input type="email" id="email" placeholder="Email"/>
-    <input type="password" id="password" placeholder="Password"/>
-    <button id="auth-button" class="btn-primary">Create Account</button>
-    <p><a href="#" id="toggle-auth">Already have an account? Log in</a></p>
+    <p class="subtitle">Enter your credentials to begin</p>
+    <div id="error-msg" class="feedback error hidden"></div>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="auth-button" class="btn">Create Account</button>
+    <p class="subtitle">
+      <a href="#" id="toggle-auth">Already have an account? Log in</a>
+    </p>
   </div>
 
-  <!-- COMPLETE PROFILE MODAL -->
-  <div id="complete-profile-modal" class="modal-backdrop hidden">
-    <div class="modal-content container">
-      <button class="close-btn" id="close-profile-modal">&times;</button>
-      <h2>Complete Your Profile</h2>
-      <input id="modal-first-name" placeholder="First Name"/>
-      <input id="modal-last-name"  placeholder="Last Name"/>
-      <select id="modal-gender"><option value="">Gender</option><option>Male</option><option>Female</option></select>
-      <button id="modal-save-profile" class="btn-primary">Save Profile</button>
+  <!-- PROFILE COMPLETION -->
+  <div id="complete-profile-modal" class="hidden">
+    <div class="modal-content">
+      <h3>Complete Your Profile</h3>
+      <p class="subtitle">Just a few more details…</p>
+      <input type="text" id="modal-first-name" placeholder="First Name" />
+      <input type="text" id="modal-last-name"  placeholder="Last Name" />
+      <select id="modal-gender">
+        <option value="">Select Gender</option><option>Male</option><option>Female</option>
+      </select>
+      <button id="modal-save-profile" class="btn">Save Profile</button>
     </div>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- APP -->
   <div id="app" class="hidden">
+
     <!-- HOME -->
     <div id="view-home" class="container">
       <h2>Choose Your Game</h2>
@@ -125,9 +176,9 @@
       </div>
     </div>
 
-    <!-- TOURNAMENT -->
+    <!-- TOURNAMENTS -->
     <div id="view-tourney" class="container hidden">
-      <button id="back-to-games" class="btn-primary">← Back to Games</button>
+      <button id="back-to-games" class="btn" style="background:transparent;color:var(--accent);margin-bottom: var(--spacing);">← Back to Games</button>
       <div class="tourney-nav">
         <button id="nav-upcoming" class="active-nav">Upcoming</button>
         <button id="nav-ongoing">Ongoing</button>
@@ -137,63 +188,61 @@
     </div>
 
     <!-- DETAIL MODAL -->
-    <div id="tourney-detail-modal" class="modal-backdrop hidden">
-      <div class="modal-content">
+    <div id="tourney-detail-modal" class="hidden">
+      <div class="modal-box">
         <button class="close-btn" id="close-detail">&times;</button>
-        <h2 id="detail-title"></h2>
-        <div class="text-muted">Date: <span id="detail-date"></span> &bull; Time: <span id="detail-time"></span></div>
-        <div class="card">
-          <div class="card-row"><span>Map:</span><span id="detail-map"></span></div>
-          <div class="card-row"><span>Per Kill:</span><span id="detail-pkill"></span></div>
-          <div class="card-row"><span>Join Fee:</span><span id="detail-fee"></span></div>
-        </div>
+        <h3 id="detail-title"></h3>
+        <p><strong>Date:</strong> <span id="detail-date"></span></p>
+        <p><strong>Time:</strong> <span id="detail-time"></span></p>
+        <p><strong>Map:</strong> <span id="detail-map"></span></p>
+        <p><strong>Per Kill:</strong> <span id="detail-pkill"></span></p>
+        <p><strong>Join Fee:</strong> <span id="detail-fee"></span></p>
+
         <div id="cred-box" class="cred-container hidden">
-          <h3 style="color:var(--accent);">Credentials</h3>
+          <h4>Credentials</h4>
           <p><strong>ID:</strong> <span id="detail-cus-id"></span></p>
           <p><strong>Password:</strong> <span id="detail-cus-pass"></span></p>
         </div>
-        <div class="card">
-          <h3 style="font-size:1.1rem;">Description</h3>
-          <p id="detail-desc" class="text-muted">Loading…</p>
-        </div>
-        <div class="card">
-          <h3 style="font-size:1.1rem;">Participants</h3>
-          <ul id="detail-members" class="text-muted"><li>Loading…</li></ul>
-        </div>
-        <button id="settle-rewards" class="btn-primary">Settle Reward</button>
+
+        <h4>Description</h4>
+        <p id="detail-desc">Loading…</p>
+
+        <h4>Participants</h4>
+        <ul id="detail-members"></ul>
+
+        <button id="settle-rewards" class="btn">Settle Reward</button>
       </div>
     </div>
 
     <!-- ACCOUNT -->
     <div id="view-account" class="container hidden">
       <div class="profile-header">
-        <img id="avatar-img" src="https://via.placeholder.com/80" alt="Avatar"/>
-        <h2 id="display-username">Username</h2>
-        <p class="text-muted">Coins: <span id="display-coins">0</span></p>
+        <img id="avatar-img" src="" alt="Avatar"/>
+        <h3 id="display-username"></h3>
+        <p>Coins: <span id="display-coins"></span></p>
       </div>
-      <div id="success-msg" class="success hidden"></div>
-      <input id="first_name" placeholder="First Name"/>
-      <input id="last_name"  placeholder="Last Name"/>
-      <select id="gender"><option value="">Gender</option><option>Male</option><option>Female</option></select>
-      <button id="update-profile" class="btn-primary">Update Profile</button>
-      <button id="logout" class="btn-danger">Log Out</button>
+      <div id="success-msg" class="feedback success hidden"></div>
+      <input type="text" id="first_name" placeholder="First Name"/>
+      <input type="text" id="last_name"  placeholder="Last Name"/>
+      <select id="gender"><option value="">Select Gender</option><option>Male</option><option>Female</option></select>
+      <button id="update-profile" class="btn">Update Profile</button>
+      <button id="logout" class="btn" style="background:var(--error);color:#fff;">Log Out</button>
     </div>
 
     <!-- FOOTER -->
     <div class="footer">
-      <button id="nav-home" class="active">Home</button>
-      <button id="nav-account">Account</button>
+      <button id="nav-home" class="active btn" style="background:transparent;color:var(--accent);flex:1;">Home</button>
+      <button id="nav-account" class="btn" style="background:transparent;color:var(--accent);flex:1;">Account</button>
     </div>
   </div>
 
+  <!-- Supabase & Logic (unchanged functionality) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Supabase init
-    const SUPABASE_URL = 'https://xdyzijzaidzmwpvmdvzd.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_KEY = 'YOUR_ANON_KEY';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Avatar pool
     const AVATARS = [
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_154647_182.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
