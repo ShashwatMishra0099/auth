@@ -6,7 +6,7 @@
   <title>Pro Tournament Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Work+Sans:wght@300;500&display=swap" rel="stylesheet"/>
   <style>
-    /* [All previous CSS as before] */
+    /* CORE & EXISTING STYLES: unchanged from previous version */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Work Sans', sans-serif; background: #0a0a0a; color: #e0dede; min-height: 100vh; display: flex; flex-direction: column; }
     .container { width: 90%; max-width: 420px; margin: 4rem auto; background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; padding: 2rem; box-shadow: 0 0 15px rgba(212,175,55,0.5); }
@@ -29,19 +29,19 @@
     .footer button:hover:not(.disabled), .footer .active { background: #1f1f1f; color: #d4af37; }
     .footer .disabled { opacity: .5; cursor: not-allowed; }
 
-    /* Profile modal */
+    /* Profile Modal */
     #complete-profile-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 999; }
     #complete-profile-modal .modal-content { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; padding: 2rem; width: 90%; max-width: 400px; text-align: center; }
     #complete-profile-modal h3 { font-family: 'Orbitron', sans-serif; color: #d4af37; margin-bottom: 1rem; }
 
-    /* Game grid */
+    /* Game Grid */
     .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
     .game-card { cursor: pointer; border: 2px solid #333; border-radius: 8px; overflow: hidden; transition: border-color .2s; }
     .game-card:hover { border-color: #d4af37; }
     .game-card img { width: 100%; display: block; }
     .game-card h3 { text-align: center; margin: .5rem 0; color: #d4af37; font-family: 'Orbitron', sans-serif; }
 
-    /* Tournament screen */
+    /* Tournament Screen */
     #view-tourney .container { margin-top: 2rem; }
     #back-to-games { background: none; color: #d4af37; border: none; font-family: 'Orbitron', sans-serif; margin-bottom: 1rem; padding: 0; cursor: pointer; }
     #back-to-games:hover { text-decoration: underline; }
@@ -60,7 +60,7 @@
     .slot-text { text-align: right; font-size: .8rem; color: #d4af37; margin-bottom: .5rem; }
     .tourney-item button { width: auto; padding: .5rem 1rem; font-size: .9rem; margin-top: 0; }
 
-    /* Detail modal */
+    /* Detail Modal */
     #tourney-detail-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     #tourney-detail-modal .modal-box { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; padding: 2rem; width: 90%; max-width: 500px; color: #e0dede; max-height: 90%; overflow-y: auto; }
     #tourney-detail-modal h3 { font-family: 'Orbitron', sans-serif; color: #d4af37; margin-bottom: 1rem; text-align: center; }
@@ -82,8 +82,8 @@
     <h2 id="auth-title">Sign Up</h2>
     <p class="subtitle">Access the Pro Tournament Dashboard</p>
     <div id="error-msg" class="error hidden"></div>
-    <input type="email" id="email" placeholder="Your email"/>
-    <input type="password" id="password" placeholder="Your password"/>
+    <input id="email"    type="email"    placeholder="Your email"/>
+    <input id="password" type="password" placeholder="Your password"/>
     <button id="auth-button">Create Account</button>
     <p style="text-align:center;color:#777">
       <a href="#" id="toggle-auth">Already have an account? Log in</a>
@@ -95,8 +95,8 @@
     <div class="modal-content">
       <h3>Complete Your Profile</h3>
       <p class="subtitle">Fill these details to continue</p>
-      <label>First Name</label><input id="modal-first-name" placeholder="First Name"/>
-      <label>Last Name</label><input id="modal-last-name" placeholder="Last Name"/>
+      <label>First Name</label><input id="modal-first-name" type="text" placeholder="First Name"/>
+      <label>Last Name</label><input id="modal-last-name" type="text" placeholder="Last Name"/>
       <label>Gender</label>
       <select id="modal-gender"><option value="">Select Gender</option><option>Male</option><option>Female</option></select>
       <button id="modal-save-profile">Save Profile</button>
@@ -111,11 +111,11 @@
       <h2>Choose Your Game</h2>
       <div class="game-grid" id="game-list">
         <div class="game-card" data-game="freefire">
-          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg" />
+          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download.jpeg"/>
           <h3>Free Fire</h3>
         </div>
         <div class="game-card" data-game="bgmi">
-          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download%20(1).jpeg" />
+          <img src="https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/download%20(1).jpeg"/>
           <h3>BGMI</h3>
         </div>
       </div>
@@ -182,7 +182,6 @@
       <button id="nav-home" class="active">Home</button>
       <button id="nav-account">Account</button>
     </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -192,7 +191,7 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeXppanphaWR6bXdwdm1kdnpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDQ3NTAsImV4cCI6MjA2NjE4MDc1MH0.h65kJfjWFlwaf924pIgH7Sypeef5ITEMeDjcQRAy1qI';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Avatars
+    // Avatar pool
     const AVATARS = [
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_154647_182.jpg",
       "https://xdyzijzaidzmwpvmdvzd.supabase.co/storage/v1/object/public/icon/IMG_20250623_155317_564.jpg",
@@ -254,9 +253,9 @@
           lastNameIn    = document.getElementById('last_name'),
           genderIn      = document.getElementById('gender');
 
-    let isLogin = false;
-    let currentGame = null;
-    let filter = 'upcoming';
+    let isLogin       = false;
+    let currentGame   = null;
+    let filter        = 'upcoming';
 
     function showError(msg){
       errorMsg.textContent = msg;
@@ -277,7 +276,7 @@
         : 'Already have an account? Log in';
     });
 
-    // Auth handler
+    // Handle auth
     authButton.addEventListener('click', async () => {
       clearError();
       const email = emailInput.value.trim(),
@@ -311,7 +310,7 @@
     });
 
     function showModal(){
-      mfName.value=''; mlName.value=''; mGender.value='';
+      mfName.value = ''; mlName.value = ''; mGender.value = '';
       modal.classList.remove('hidden');
       navHomeBtn.classList.add('disabled');
       navAccountBtn.classList.add('disabled');
@@ -356,7 +355,7 @@
       viewAccount.classList.remove('hidden');
     });
 
-    // Load profile
+       // Load profile
     async function loadProfile(){
       const { data: ud } = await supabaseClient.auth.getUser();
       const { data, error } = await supabaseClient.from('profiles')
@@ -403,7 +402,7 @@
       }
     });
 
-        // Tournament listing
+    // Tournament listing
     gameList.addEventListener('click', async e => {
       const card = e.target.closest('.game-card');
       if (!card) return;
@@ -437,17 +436,16 @@
 
       const { data: tours } = await supabaseClient.from(tt)
         .select('*').order('date',{ascending:true});
-
       const { data: ud } = await supabaseClient.auth.getUser();
       const userId = ud.user.id;
 
       tourneyCont.innerHTML = '';
       for (let t of tours) {
-        // skip fully ended not joined
+        // hide END & not joined
         if (t.status === 'END') {
-          const { data: part } = await supabaseClient.from(pt)
+          const { data: joinedRow } = await supabaseClient.from(pt)
             .select('id').eq('tournament_id',t.id).eq('user_id',userId);
-          if (part.length === 0) continue;
+          if (joinedRow.length === 0) continue;
         }
 
         const { data: mine } = await supabaseClient.from(pt)
@@ -455,10 +453,10 @@
         const joined = mine.length > 0;
         const result = joined ? mine[0].result : null;
 
-        // determine category
-        if (filter === 'upcoming'  && (joined || t.status !== 'ON')) continue;
-        if (filter === 'ongoing'   && (!joined || t.status !== 'ON')) continue;
-        if (filter === 'completed' && (!joined || t.status !== 'END')) continue;
+        // filter by status + join
+        if (filter==='upcoming'  && (joined || t.status!=='ON')) continue;
+        if (filter==='ongoing'   && (!joined || t.status!=='ON')) continue;
+        if (filter==='completed' && (!joined || t.status!=='END')) continue;
 
         const { data: parts } = await supabaseClient.from(pt)
           .select('id').eq('tournament_id',t.id);
@@ -474,6 +472,11 @@
         const btn = document.createElement('button');
         btn.textContent = joined ? 'Joined' : 'Join';
         btn.disabled   = joined;
+        // Full check:
+        if (!joined && parts.length >= t.max_slots) {
+          btn.textContent = 'Full';
+          btn.disabled = true;
+        }
         btn.style.marginTop = '0';
         btn.addEventListener('click', e => {
           e.stopPropagation();
@@ -494,14 +497,17 @@
       const coins = pr[0].coins;
       if (coins < fee) return alert('Not enough coins!');
       await supabaseClient.from('profiles')
-        .update({coins:coins-fee}).eq('id',(await supabaseClient.auth.getUser()).data.user.id);
+        .update({ coins: coins-fee }).eq('id',(await supabaseClient.auth.getUser()).data.user.id);
       await supabaseClient.from(pt)
-        .insert({tournament_id:tid,user_id:(await supabaseClient.auth.getUser()).data.user.id,ingame_name:ign,result:null});
+        .insert({ tournament_id: tid, user_id: (await supabaseClient.auth.getUser()).data.user.id, ingame_name: ign, result: null, reward: null });
       alert('Joined!');
       showTournaments();
     }
 
+    // Detail & Settle
     async function showDetail(t, joined, result) {
+      const pt = currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
+
       detailTitle.textContent = `${currentGame.toUpperCase()} Tournament #${t.id}`;
       detailDate.textContent  = t.date;
       detailTime.textContent  = t.time;
@@ -509,7 +515,6 @@
       detailPKill.textContent = t.per_kill;
       detailFee.textContent   = t.join_fee;
 
-      // status-based credential visibility
       if (joined) {
         credBox.classList.remove('hidden');
         detailCusId.textContent   = t.cus_id;
@@ -525,19 +530,33 @@
         detailDesc.textContent = 'No description available.';
       }
 
-      const pt = currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
       const { data: parts } = await supabaseClient.from(pt)
-        .select('ingame_name').eq('tournament_id',t.id);
+        .select('ingame_name').eq('tournament_id', t.id);
       detailMembers.innerHTML = parts.length
         ? parts.map(p=>`<li>${p.ingame_name}</li>`).join('')
         : '<li>No participants yet.</li>';
 
-      // settle button logic
+      // Settle button logic
       if (joined && result === 'W') {
-        settleBtn.textContent  = 'Settle Reward';
-        settleBtn.style.background = 'linear-gradient(135deg,#d4af37,#b5912b)';
-        settleBtn.disabled = false;
-        settleBtn.onclick = () => settleRewards(t.per_kill, t.id);
+        // check reward status
+        const { data: mine } = await supabaseClient.from(pt)
+          .select('reward').eq('tournament_id', t.id).eq('user_id', (await supabaseClient.auth.getUser()).data.user.id);
+        const rewardStatus = mine[0].reward;
+
+        if (rewardStatus === 'SUCCESS') {
+          settleBtn.textContent  = 'Reward Collected';
+          settleBtn.style.background = '#28a745';
+          settleBtn.disabled = true;
+        } else if (rewardStatus === 'FAILED') {
+          settleBtn.textContent  = 'Reward Failed';
+          settleBtn.style.background = '#b91c1c';
+          settleBtn.disabled = true;
+        } else {
+          settleBtn.textContent  = 'Settle Reward';
+          settleBtn.style.background = null;
+          settleBtn.disabled = false;
+          settleBtn.onclick = () => settleRewards(t.per_kill, t.id);
+        }
       } else if (joined && result === 'L') {
         settleBtn.textContent  = 'You Lost';
         settleBtn.style.background = '#b91c1c';
@@ -550,7 +569,7 @@
           setActive(navHomeBtn);
         };
       } else {
-        settleBtn.textContent = 'Settle Reward';
+        settleBtn.textContent  = 'Settle Reward';
         settleBtn.disabled = true;
       }
 
@@ -561,20 +580,41 @@
 
     async function settleRewards(perKill, tid) {
       const pt = currentGame==='freefire'? 'freefire_participants':'bgmi_participants';
-      const { data: winners } = await supabaseClient.from(pt)
-        .select('user_id').eq('tournament_id', tid).eq('result','W');
+      const { data: session } = await supabaseClient.auth.getSession();
+      const userId = session.user.id;
 
-      for (let w of winners) {
+      // credit user
+      let success = false;
+      try {
         const { data: pArr } = await supabaseClient.from('profiles')
-          .select('coins').eq('id', w.user_id);
+          .select('coins').eq('id', userId);
         const current = pArr[0].coins;
         await supabaseClient.from('profiles')
           .update({ coins: current + perKill })
-          .eq('id', w.user_id);
+          .eq('id', userId);
+        success = true;
+      } catch {
+        success = false;
       }
-      alert('Rewards settled: +' + perKill + ' coins each winner');
-      detailModal.classList.add('hidden');
-      showTournaments();
+
+      // update participant reward field
+      await supabaseClient.from(pt)
+        .update({ reward: success ? 'SUCCESS' : 'FAILED' })
+        .eq('tournament_id', tid)
+        .eq('user_id', userId);
+
+      // update button UI
+      if (success) {
+        settleBtn.textContent  = 'Reward Collected';
+        settleBtn.style.background = '#28a745';
+        settleBtn.disabled = true;
+        alert('Reward credited!');
+      } else {
+        settleBtn.textContent  = 'Reward Failed';
+        settleBtn.style.background = '#b91c1c';
+        settleBtn.disabled = true;
+        alert('Reward collection failed.');
+      }
     }
   </script>
 </body>
