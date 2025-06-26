@@ -3,7 +3,7 @@
 1. Sign up at https://app.supabase.io and create a new project.
 2. In the SQL editor, run the following to create `profiles` table:
 
-```sql
+``sql
 create table profiles (
   id uuid references auth.users on delete cascade,
   username text unique not null,
