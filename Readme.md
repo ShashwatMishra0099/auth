@@ -14,3 +14,6 @@ create table profiles (
   avatar_url text,
   primary key (id)
 );
+
+
+https://im-h.phncdn.com/cDIuDou_vFSwhWEwmnT9wLmOPUU=,1750926723/hls/videos/202506/22/470720835/720P_4000K_470720835.mp4/master.m3u8?
