@@ -3,7 +3,7 @@
 1. Sign up at https://app.supabase.io and create a new project.
 2. In the SQL editor, run the following to create `profiles` table:
 
-```sql-- Users Table
+```sql -- Users Table
 create table users (
   id uuid primary key default uuid_generate_v4(),
   email text not null unique,
@@ -51,4 +51,4 @@ select
     when t.status = 'ON' then 'ongoing'
   end as user_status
 from tournament_players tp
-join tournaments t on t.id = tp.tournament_id;```
+join tournaments t on t.id = tp.tournament_id; ```
