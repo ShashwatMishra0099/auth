@@ -51,4 +51,4 @@ select
     when t.status = 'ON' then 'ongoing'
   end as user_status
 from tournament_players tp
-join tournaments t on t.id = tp.tournament_id; ```
+join tournaments t on t.id = tp.tournament_id;
